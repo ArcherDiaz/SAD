@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:sad_lib/StorageClass.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
