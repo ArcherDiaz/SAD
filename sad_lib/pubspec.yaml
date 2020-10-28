@@ -11,6 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider: ^1.6.14
+  webview_flutter: ^0.3.22+1
+  firebase_storage: ^4.0.0
 
 dev_dependencies:
   flutter_test:
