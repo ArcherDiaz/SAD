@@ -3,16 +3,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sad_lib/StorageClass.dart';
 
-enum Font {s12, s15, s17, s20, s22, s40} // font sizes
-// s12 = 12.0        s15 = 15.0          s17 = 17.5
-// s20 = 20.0        s22 = 22.5          s40 = 40.0
-
 class TextView extends StatelessWidget {
 
   final Alignment alignment;
   final EdgeInsets padding;
   final String text;
-  final Font size;
+  final double size;
   final Color color;
   final FontWeight fontWeight;
   final FontStyle fontStyle;
@@ -22,7 +18,7 @@ class TextView extends StatelessWidget {
     this.alignment = Alignment.center,
     this.padding = EdgeInsets.zero,
     @required this.text,
-    this.size = Font.s17,
+    this.size = 17.5,
     this.color = Colors.black,
     this.fontWeight = FontWeight.w400,
     this.fontStyle = FontStyle.normal,
@@ -31,18 +27,18 @@ class TextView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Text(text,
-        style: TextStyle(
-          fontSize: size == Font.s12 ? 12.0
-              : size == Font.s15 ? 15.0
-              : size == Font.s17 ? 17.5
-              : size == Font.s20 ? 20.0
-              : size == Font.s22 ? 22.5
-              : 40.0,
-          fontWeight: fontWeight,
-          color: color,
+    return Align(
+      alignment: alignment,
+      child: Padding(
+        padding: padding,
+        child: Text(text,
+          style: TextStyle(
+            fontSize: size,
+            letterSpacing: letterSpacing,
+            fontWeight: fontWeight,
+            fontStyle: fontStyle,
+            color: color,
+          ),
         ),
       ),
     );
@@ -53,9 +49,8 @@ class TextView extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 enum Width {fit, stretch}
-// fit = make button be normal size to fit content
-// stretch = make button be stretch to fit screen width
-
+///fit = make button be normal size to fit content
+///stretch = make button be stretch to fit screen width
 class ButtonView extends StatelessWidget {
 
   final EdgeInsets margin;
@@ -65,6 +60,7 @@ class ButtonView extends StatelessWidget {
   final Color color;
   final Gradient gradient;
   final double borderRadius;
+  final Border border;
   final EdgeInsets padding;
   final Icon icon;
   final Widget child;
@@ -77,6 +73,7 @@ class ButtonView extends StatelessWidget {
     @required this.onPressed,
     this.color = Colors.transparent,
     this.gradient,
+    this.border = const Border(),
     this.borderRadius = 7.5,
     this.icon,
     @required this.child,
@@ -92,14 +89,16 @@ class ButtonView extends StatelessWidget {
           onTap: (){
             onPressed.call();
           },
+          hoverColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
           borderRadius: BorderRadius.circular(borderRadius),
-          splashColor: color == Colors.white ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+          splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
           child: width == Width.fit ? Container(
             padding: padding,
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(borderRadius),
               gradient: gradient,
+              border: border,
             ),
             child: _contentView(),
           )
@@ -110,6 +109,7 @@ class ButtonView extends StatelessWidget {
               color: color,
               borderRadius: BorderRadius.circular(borderRadius),
               gradient: gradient,
+              border: border,
             ),
             child: _contentView(),
           ),
@@ -135,7 +135,6 @@ class ButtonView extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 enum IndicatorType {circular, linear}
-
 class CustomLoader extends StatelessWidget {
 
   final Color color1;
@@ -178,66 +177,62 @@ class CustomLoader extends StatelessWidget {
 
 //------------------------------------------------------------------------------
 
-enum FutureType {file, database}
-typedef GetImageCallBack = Uint8List Function(String key);
-typedef AddImageCallBack = void Function(String key, Uint8List iamge);
-typedef ContainsImageCallBack = bool Function(String key);
+enum FutureType {file, network, firebaseStorage}
+typedef GetImageCallBack = Uint8List Function(String key); ///This function requires an image, that belongs to the given key
+typedef AddImageCallBack = void Function(String key, Uint8List iamge); ///This function provides the key/url and image to the user to store or utilize
+typedef ContainsImageCallBack = bool Function(String key); ///This function provides a key to the user tp check their image Map already contains a specific image
 
 class ImageView extends StatelessWidget {
 
-  FirebaseStorage _fireStorage = FirebaseStorage.instance;
+  final FirebaseStorage _fireStorage = FirebaseStorage.instance;
 
   final ColorFilter colorFilter;
   final double radius;
-  final EdgeInsets padding;
+  final double aspectRatio;
+  final EdgeInsets margin;
 
-  final StorageClass storage;
   final String imageKey;
+  final StorageClass storage;
   final GetImageCallBack getImage;
   final AddImageCallBack addImage;
   final ContainsImageCallBack containsImage;
   final FutureType futureType;
   final BoxFit fit;
-  final bool assignToWidth;
   final double maxSize;
   final Widget errorView;
 
-  final IndicatorType indicator;
+  final CustomLoader customLoader;
 
   ImageView({Key key,
     @required this.imageKey,
     @required this.storage,
 
-    this.getImage,
-    this.addImage,
-    this.containsImage,
+    @required this.getImage,
+    @required this.addImage,
+    @required this.containsImage,
 
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
-    this.padding = EdgeInsets.zero,
+    this.margin = EdgeInsets.zero,
     this.radius = 0.0,
+    this.aspectRatio = 1.0,
 
-    this.futureType = FutureType.database,
+    this.futureType = FutureType.firebaseStorage,
     this.maxSize = double.infinity,
-    this.assignToWidth = true,
     this.fit = BoxFit.cover,
-    this.indicator = IndicatorType.circular,
+    @required this.customLoader,
 
     this.errorView,
   }) : super(key: key);
 
-  Future<Uint8List> getImageFromFile(String key){ //key examples: profile Photo or profile Wallpaper
+  Future<Uint8List> getImageFromFile(String key){
     if(containsImage.call(key) == true){
       // if imageList contains this key, then just get the image
       return Future.value(getImage.call(key));
     }else{
-      return storage.readImage(key).then((image){
+      return storage.readImage("$key.diaz").then((image){
         if(image == null || image.isEmpty){
-          return getImageFromDB(key).then((dbImage){
-            addImage.call(key, dbImage);
-            return storage.saveImage("userProfileImages.diaz", dbImage).then((value){
-              return image;
-            });
-          });
+          print("ImageView | getImageFromFile() Error: no image found at the requested destination; $key");
+          return null;
         }else{
           addImage.call(key, image);
           return image;
@@ -247,53 +242,86 @@ class ImageView extends StatelessWidget {
   }
 
   Future<Uint8List> getImageFromDB(String key){
-    if(containsImage.call(key) == true){
-      return Future.value(getImage(key));
-    }else{
-      return _fireStorage.ref().child(key).getData(10000000).then((image){
-        addImage.call(key, image);
+    return getImageFromFile(key).then((image){
+      if(image != null){
         return image;
-      });
-    }
+      }else{
+        if(containsImage.call(key) == true){
+          return Future.value(getImage(key));
+        }else{
+          return _fireStorage.ref().child(key).getData(10000000).then((image){
+            addImage.call(key, image);
+            return image;
+          }).catchError((onError){
+            print("ImageView | Firebase Storage Error: ${onError.toString()}");
+            return null;
+          });
+        }
+      }
+    }).catchError((onError){
+      if(containsImage.call(key) == true){
+        return Future.value(getImage(key));
+      }else{
+        return _fireStorage.ref().child(key).getData(10000000).then((image){
+          addImage.call(key, image);
+          return image;
+        }).catchError((onError){
+          print("ImageView | Firebase Storage Error: ${onError.toString()}");
+          return null;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: ColorFiltered(
-        colorFilter: colorFilter,
-        child: Padding(
-          padding: padding,
-          child: FutureBuilder(
-            future: futureType == FutureType.database ? getImageFromDB(imageKey) : getImageFromFile(imageKey),
-            builder: (context, snapshot){
-              if(snapshot.connectionState == ConnectionState.done){
-                if(snapshot.hasData){
-                  if(assignToWidth == true){
-                    return Image.memory(snapshot.data, width: maxSize, fit: fit,);
-                  }else {
-                    return Image.memory(snapshot.data, height: maxSize, fit: fit,);
-                  }
-                }else{
-                  return errorView == null ? Image.asset("assets/soca_logo.png", width: maxSize,
-                    color: Colors.red, fit: fit,) : errorView;
-                }
-              }else{
-                return Container(
-                  alignment: Alignment.centerLeft,
-                  width: maxSize,
-                  child: CustomLoader(
-                    indicator: IndicatorType.circular,
-                    color1: Colors.blue,
-                    color2: Colors.green,
-                  ),
-                );
-              }
-            },
-          ),
+    return Padding(
+      padding: margin,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: ColorFiltered(
+          colorFilter: colorFilter,
+          child: futureType == FutureType.network ? _networkImage() : _futureBuilder(),
         ),
       ),
+    );
+  }
+
+  Widget _networkImage(){
+    return Image.network(imageKey,
+      width: maxSize,
+      height: maxSize/aspectRatio,
+      fit: fit,
+      loadingBuilder: (context, widget, chunk){
+        if(chunk == null){
+          return widget;
+        }else {
+          return customLoader;
+        }
+      },
+    );
+  }
+
+  Widget _futureBuilder(){
+    return FutureBuilder(
+      future: futureType == FutureType.firebaseStorage ? getImageFromDB(imageKey) : getImageFromFile(imageKey),
+      builder: (context, snapshot){
+        if(snapshot.connectionState == ConnectionState.done){
+          if(snapshot.hasData && snapshot.data != null){
+            return Image.memory(snapshot.data, width: maxSize, height: maxSize/aspectRatio, fit: fit,);
+          }else{
+            return errorView == null ? TextView(text: "Unable to load image..",)
+                : errorView;
+          }
+        }else{
+          return Container(
+              alignment: Alignment.center,
+              width: maxSize,
+              height: maxSize/aspectRatio,
+              child: customLoader
+          );
+        }
+      },
     );
   }
 

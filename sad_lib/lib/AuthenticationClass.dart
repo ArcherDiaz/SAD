@@ -6,9 +6,17 @@ class AuthenticationClass{
   AuthenticationClass({bool checkUser = false}){
     if(checkUser == true){
       if(_auth.currentUser == null){
-        _auth.signInAnonymously();
+        _auth.signInAnonymously().then((credential){
+          print("Authentication Class | SUCCESSFUL anonymous sign in");
+        }).catchError((onError){
+          print("Authentication Class | Anonymous Sign In: ${onError.toString()}");
+        });
       }else{
-        _auth.currentUser.reload();
+        _auth.currentUser.reload().then((useless){
+          print("Authentication Class | SUCCESSFUL active user reload");
+        }).catchError((onError){
+          print("Authentication Class | Reloading Current User: ${onError.toString()}");
+        });
       }
     }
   }
@@ -40,6 +48,7 @@ class AuthenticationClass{
 
   Future<Map<String, dynamic>> logInUser(String email, String password){
     return _auth.signInWithEmailAndPassword(email: email, password: password).then((credential){
+      print("Authentication Class | SUCCESSFUL user sign up");
       return {
         "success": true,
         "uid": credential.user.uid,
@@ -51,6 +60,7 @@ class AuthenticationClass{
       print("Authentication Class | Logging In Error: ${onError.toString()}");
       return {
         "success": false,
+        "message": "Authentication Class | Logging In Error: ${onError.toString()}",
       };
     });
   }
@@ -59,6 +69,7 @@ class AuthenticationClass{
     return _auth.createUserWithEmailAndPassword(email: email, password: password).then((credential){
       if(emailVerification == true){
         return credential.user.sendEmailVerification().then((useless){
+          print("Authentication Class | SUCCESSFUL user sign up with verification email sent");
           return {
             "success": true,
             "uid": credential.user.uid,
@@ -70,9 +81,11 @@ class AuthenticationClass{
           print("Authentication Class | Email Verification Request Error: ${onError.toString()}");
           return {
             "success": false,
+            "message": "Authentication Class | Email Verification Request Error: ${onError.toString()}",
           };
         });
       }else{
+        print("Authentication Class | SUCCESSFUL user sign up");
         return {
           "success": true,
           "uid": credential.user.uid,
@@ -85,6 +98,7 @@ class AuthenticationClass{
       print("Authentication Class | Registering Error: ${onError.toString()}");
       return {
         "success": false,
+        "message": "Authentication Class | Registering Error: ${onError.toString()}",
       };
     });
   }
