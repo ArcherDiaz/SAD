@@ -166,5 +166,59 @@ class FormatClass{
     return _inventory.isEmpty;
   }
 
+  String formattedDate(String dateStr) {
+    DateTime postDate = DateTime.parse(dateStr);
+    String day;
+    String month;
+    String year;
+    if(postDate.weekday == 0) {
+      day = "Sun";
+    } else if (postDate.weekday == 1) {
+      day = "Mon";
+    } else if (postDate.weekday == 2) {
+      day = "Tues";
+    } else if (postDate.weekday == 3) {
+      day = "Wed";
+    } else if (postDate.weekday == 4) {
+      day = "Thurs";
+    } else if (postDate.weekday == 5) {
+      day = "Fri";
+    } else if (postDate.weekday == 6) {
+      day = "Sat";
+    }
+
+    if(postDate.month == 1) {
+      month = "Jan";
+    } else if (postDate.month == 2) {
+      month = "Feb";
+    } else if (postDate.month == 3) {
+      month = "Mar";
+    } else if (postDate.month == 4) {
+      month = "Apr";
+    } else if (postDate.month == 5) {
+      month = "May";
+    } else if (postDate.month == 6) {
+      month = "Jun";
+    } else if (postDate.month == 7) {
+      month = "Jul";
+    } else if (postDate.month == 8) {
+      month = "Aug";
+    } else if (postDate.month == 9) {
+      month = "Sept";
+    } else if (postDate.month == 10) {
+      month = "Oct";
+    } else if (postDate.month == 11) {
+      month = "Nov";
+    } else if (postDate.month == 12) {
+      month = "Dec";
+    }
+
+    year = postDate.year.toString();
+
+    return "${month} ${postDate.day}, ${year}";
+  }
+  
 }
+
+
 
