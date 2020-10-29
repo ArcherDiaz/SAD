@@ -100,7 +100,7 @@ class FormatClass{
 
 
 
-  double getPriceFromLocation(double latitude, double longitude){
+  double getPriceFromLocation(double latitude, double longitude, {double dollarPerMile = 3.85, double minimumPrice = 10.0, double additionalFee = 10.0}){
     //17.133342590287807, -61.83389212936163 epicurean coordinates
     double theta = longitude - -61.83389212936163;
     double distance = sin(_deg2rad(latitude)) * sin(_deg2rad(17.133342590287807)) +
@@ -109,9 +109,9 @@ class FormatClass{
     distance = _rad2deg(distance);
     distance = distance * 60 * 1.1515;
     distance = distance * 1.609344;
-    double price = 3.85 * distance.round();
-    if(price < 10.0){price = 10.0;}
-    return (price + 10);
+    double price = dollarPerMile * distance.round();
+    if(price < minimumPrice){price = minimumPrice;}
+    return (price + additionalFee);
   }
   double _deg2rad(double deg){
     return (deg * pi / 180.0);
