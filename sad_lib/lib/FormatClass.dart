@@ -3,13 +3,75 @@ import 'dart:math';
 import 'dart:typed_data';
 
 enum  DataType{string, date}
+enum  DisplayDate{withWeekday, withMonth}
 
 class FormatClass{
 
+  ///DATE FUNCTIONS
   DateTime now = DateTime.now();
 
+  String formattedDate(dynamic date, {DataType dataType = DataType.date, DisplayDate displayDate = DisplayDate.withMonth}) {
+    DateTime postDate;
+    if(dataType == DataType.date){
+      postDate = date;
+    }else{
+      postDate = DateTime.parse(date);
+    }
+    String weekday;
+    String month;
+    String year;
+    if(postDate.weekday == 0) {
+      weekday = "Sun";
+    } else if (postDate.weekday == 1) {
+      weekday = "Mon";
+    } else if (postDate.weekday == 2) {
+      weekday = "Tues";
+    } else if (postDate.weekday == 3) {
+      weekday = "Wed";
+    } else if (postDate.weekday == 4) {
+      weekday = "Thurs";
+    } else if (postDate.weekday == 5) {
+      weekday = "Fri";
+    } else if (postDate.weekday == 6) {
+      weekday = "Sat";
+    }
 
-  String formatDate(dynamic date, {DataType dataType = DataType.date}){
+    if(postDate.month == 1) {
+      month = "Jan";
+    } else if (postDate.month == 2) {
+      month = "Feb";
+    } else if (postDate.month == 3) {
+      month = "Mar";
+    } else if (postDate.month == 4) {
+      month = "Apr";
+    } else if (postDate.month == 5) {
+      month = "May";
+    } else if (postDate.month == 6) {
+      month = "Jun";
+    } else if (postDate.month == 7) {
+      month = "Jul";
+    } else if (postDate.month == 8) {
+      month = "Aug";
+    } else if (postDate.month == 9) {
+      month = "Sept";
+    } else if (postDate.month == 10) {
+      month = "Oct";
+    } else if (postDate.month == 11) {
+      month = "Nov";
+    } else if (postDate.month == 12) {
+      month = "Dec";
+    }
+
+    year = postDate.year.toString();
+
+    if(displayDate == DisplayDate.withMonth) {
+      return "$month ${postDate.day}, $year";
+    }else{
+      return "$weekday ${postDate.day}, $year";
+    }
+  }
+
+  String getTimeFrame(dynamic date, {DataType dataType = DataType.date}){
     DateTime inputtedDate;
     if(dataType == DataType.date){
       inputtedDate = date;
@@ -73,7 +135,7 @@ class FormatClass{
   }
 
 
-
+  ///MISCELLANEOUS FUNCTIONS
   String formatPhoneNumber(String phone){
     phone = phone.replaceAll("(", "");
     phone = phone.replaceAll(")", "");
@@ -99,7 +161,7 @@ class FormatClass{
   }
 
 
-
+  ///LOCATION FUNCTIONS
   double getPriceFromLocation(double latitude, double longitude, {double dollarPerMile = 3.85, double minimumPrice = 10.0, double additionalFee = 10.0}){
     //17.133342590287807, -61.83389212936163 epicurean coordinates
     double theta = longitude - -61.83389212936163;
@@ -122,12 +184,13 @@ class FormatClass{
 
 
 
-  List<dynamic> _inventory = List();
+  ///SEARCHING FUNCTIONS
+  List<dynamic> _searchIndex = List();
 
   List<String> formatImageToMap(Uint8List rawPath, String key, int limit, {bool useMerchant = false, String merchant = ""}){
     String data = String.fromCharCodes(rawPath);
     Map<String, dynamic> contents = json.decode(data);
-    _inventory = contents["items"];
+    _searchIndex = contents["items"];
 
     // key needs to be uppercase to compare it to product names, which are all in uppercase
     return filter(key.toUpperCase(), limit, [],);
@@ -138,13 +201,13 @@ class FormatClass{
     // limit is how many results is wanted
     // loops is how many times we want to go around this recursive function(the more loops, the more results; due to key shortening)
 
-    for(int i = 0; i < _inventory.length; i++){
-      if(_inventory[i]["name"].contains(key) || _inventory[i]["upc"].contains(key)){
-        if(!results.contains(_inventory[i]["ID"])){
-          if(useMerchant == true && _inventory[i]["merchant"] == merchant) {
-            results.add(_inventory[i]["ID"]);
+    for(int i = 0; i < _searchIndex.length; i++){
+      if(_searchIndex[i]["name"].contains(key) || _searchIndex[i]["upc"].contains(key)){
+        if(!results.contains(_searchIndex[i]["ID"])){
+          if(useMerchant == true && _searchIndex[i]["merchant"] == merchant) {
+            results.add(_searchIndex[i]["ID"]);
           }else{
-            results.add(_inventory[i]["ID"]);
+            results.add(_searchIndex[i]["ID"]);
           }
         }
         if(results.length >= limit){
@@ -163,59 +226,7 @@ class FormatClass{
   }
 
   bool inventoryIsEmpty(){
-    return _inventory.isEmpty;
-  }
-
-  String formattedDate(String dateStr) {
-    DateTime postDate = DateTime.parse(dateStr);
-    String day;
-    String month;
-    String year;
-    if(postDate.weekday == 0) {
-      day = "Sun";
-    } else if (postDate.weekday == 1) {
-      day = "Mon";
-    } else if (postDate.weekday == 2) {
-      day = "Tues";
-    } else if (postDate.weekday == 3) {
-      day = "Wed";
-    } else if (postDate.weekday == 4) {
-      day = "Thurs";
-    } else if (postDate.weekday == 5) {
-      day = "Fri";
-    } else if (postDate.weekday == 6) {
-      day = "Sat";
-    }
-
-    if(postDate.month == 1) {
-      month = "Jan";
-    } else if (postDate.month == 2) {
-      month = "Feb";
-    } else if (postDate.month == 3) {
-      month = "Mar";
-    } else if (postDate.month == 4) {
-      month = "Apr";
-    } else if (postDate.month == 5) {
-      month = "May";
-    } else if (postDate.month == 6) {
-      month = "Jun";
-    } else if (postDate.month == 7) {
-      month = "Jul";
-    } else if (postDate.month == 8) {
-      month = "Aug";
-    } else if (postDate.month == 9) {
-      month = "Sept";
-    } else if (postDate.month == 10) {
-      month = "Oct";
-    } else if (postDate.month == 11) {
-      month = "Nov";
-    } else if (postDate.month == 12) {
-      month = "Dec";
-    }
-
-    year = postDate.year.toString();
-
-    return "${month} ${postDate.day}, ${year}";
+    return _searchIndex.isEmpty;
   }
   
 }
