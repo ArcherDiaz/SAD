@@ -196,6 +196,10 @@ class StorageClass {
     });
   }
 
+}
+
+
+class StorageClassWeb {
 
   ///WEB FUNCTIONS
   Map<String, dynamic> readFromMapWeb(String key){
