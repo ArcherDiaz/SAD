@@ -5,7 +5,6 @@ import 'package:sad_lib/StorageClass.dart';
 
 class TextView extends StatelessWidget {
 
-  final Alignment alignment;
   final EdgeInsets padding;
   final String text;
   final double size;
@@ -15,7 +14,6 @@ class TextView extends StatelessWidget {
   final double letterSpacing;
 
   TextView({Key key,
-    this.alignment = Alignment.center,
     this.padding = EdgeInsets.zero,
     @required this.text,
     this.size = 17.5,
@@ -27,18 +25,15 @@ class TextView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: Padding(
-        padding: padding,
-        child: Text(text,
-          style: TextStyle(
-            fontSize: size,
-            letterSpacing: letterSpacing,
-            fontWeight: fontWeight,
-            fontStyle: fontStyle,
-            color: color,
-          ),
+    return Padding(
+      padding: padding,
+      child: Text(text,
+        style: TextStyle(
+          fontSize: size,
+          letterSpacing: letterSpacing,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
         ),
       ),
     );

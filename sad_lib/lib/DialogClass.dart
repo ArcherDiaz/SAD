@@ -555,13 +555,13 @@ class DialogClass {
                     Expanded(
                       child: Container(
                         padding: EdgeInsets.all(10.0),
+                        alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50.0),
                           color: background,
                         ),
                         child: TextView(text: linkName,
                           padding: EdgeInsets.symmetric(horizontal: 10.0,),
-                          alignment: Alignment.centerLeft,
                           color: textColor,
                           size: 17.5,
                           fontWeight: FontWeight.w400,
