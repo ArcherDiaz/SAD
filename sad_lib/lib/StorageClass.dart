@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
-import 'dart:html' as html;
 
 class StorageClass {
 
@@ -194,24 +193,6 @@ class StorageClass {
     return getApplicationDocumentsDirectory().then((xDirectory) {
       return File("${xDirectory.path}/images/$filename").readAsBytes();
     });
-  }
-
-}
-
-
-class StorageClassWeb {
-
-  ///WEB FUNCTIONS
-  Map<String, dynamic> readFromMapWeb(String key){
-    Map<String, dynamic> data = json.decode(html.window.localStorage["disha"]);
-    return data[key];
-  }
-
-  Future<Map<String, dynamic>> writeToMapWeb(String key, Map<String, dynamic> data){
-    Map<String, dynamic> data = json.decode(html.window.localStorage["disha"]);
-    data.update(key, (value) => data, ifAbsent: ()=> data);
-    html.window.localStorage["disha"] = json.encode(data[key]);
-    return data[key];
   }
 
 }
