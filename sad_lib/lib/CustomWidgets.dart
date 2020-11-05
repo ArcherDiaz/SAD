@@ -3,18 +3,21 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sad_lib/StorageClass.dart';
 
-class TextView extends StatelessWidget {
-
+class TextView extends StatefulWidget {
+  final bool isSelectable;
   final Alignment alignment;
   final EdgeInsets padding;
   final String text;
+  final List<TextView> textSpan;
   final double size;
   final Color color;
   final FontWeight fontWeight;
   final FontStyle fontStyle;
   final double letterSpacing;
+  final int maxLines;
 
   TextView({Key key,
+    this.isSelectable = false,
     this.alignment = Alignment.center,
     this.padding = EdgeInsets.zero,
     @required this.text,
@@ -23,28 +26,69 @@ class TextView extends StatelessWidget {
     this.fontWeight = FontWeight.w400,
     this.fontStyle = FontStyle.normal,
     this.letterSpacing = 1.0,
-  }) : super(key: key);
+    this.maxLines,
+  }) : this.textSpan = null, super(key: key);
+
+  TextView.rich({Key key,
+    this.isSelectable = false,
+    @required this.textSpan,
+  }) : this.text = null,
+        this.alignment = null,
+        this.padding = null,
+        this.size = null,
+        this.color = null,
+        this.fontWeight = null,
+        this.fontStyle = null,
+        this.letterSpacing = null,
+        this.maxLines = null, super(key: key);
+
+  @override
+  _TextViewState createState() => _TextViewState();
+}
+
+class _TextViewState extends State<TextView> {
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: alignment,
+      alignment: widget.alignment,
       child: Padding(
-        padding: padding,
-        child: Text(text,
+        padding: widget.padding,
+        child: widget.text == null ? SelectableText(widget.text,
+          maxLines: widget.maxLines,
+          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true) : ToolbarOptions(),
           style: TextStyle(
-            fontSize: size,
-            letterSpacing: letterSpacing,
-            fontWeight: fontWeight,
-            fontStyle: fontStyle,
-            color: color,
+            fontSize: widget.size,
+            letterSpacing: widget.letterSpacing,
+            fontWeight: widget.fontWeight,
+            fontStyle: widget.fontStyle,
+            color: widget.color,
           ),
+        )
+        : SelectableText.rich(TextSpan(
+          children: <InlineSpan>[
+            for(var textView in widget.textSpan)
+              TextSpan(text: textView.text,
+                style: TextStyle(
+                  fontSize: textView.size,
+                  letterSpacing: textView.letterSpacing,
+                  fontWeight: textView.fontWeight,
+                  fontStyle: textView.fontStyle,
+                  color: textView.color,
+                ),
+              ),
+          ],
+        ),
+          maxLines: widget.maxLines,
+          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true) : ToolbarOptions(),
         ),
       ),
     );
   }
 
 }
+
+
 
 //------------------------------------------------------------------------------
 
@@ -132,6 +176,8 @@ class ButtonView extends StatelessWidget {
 
 }
 
+
+
 //------------------------------------------------------------------------------
 
 enum IndicatorType {circular, linear}
@@ -174,6 +220,8 @@ class CustomLoader extends StatelessWidget {
   }
 
 }
+
+
 
 //------------------------------------------------------------------------------
 
