@@ -54,7 +54,7 @@ class _TextViewState extends State<TextView> {
       alignment: widget.alignment,
       child: Padding(
         padding: widget.padding,
-        child: widget.text == null ? SelectableText(widget.text,
+        child: widget.text != null ? SelectableText(widget.text,
           maxLines: widget.maxLines,
           toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true) : ToolbarOptions(),
           style: TextStyle(
