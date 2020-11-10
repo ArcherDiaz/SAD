@@ -64,6 +64,7 @@ class _TextViewState extends State<TextView> {
           ),
         )
         : SelectableText.rich(
+          showCursor: false,
           maxLines: widget.maxLines,
           toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
                                : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
