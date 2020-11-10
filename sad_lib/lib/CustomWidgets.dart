@@ -18,7 +18,6 @@ class TextView extends StatefulWidget {
 
   TextView({Key key,
     this.isSelectable = false,
-    this.alignment = Alignment.center,
     this.padding = EdgeInsets.zero,
     @required this.text,
     this.size = 17.5,
@@ -33,7 +32,6 @@ class TextView extends StatefulWidget {
     this.isSelectable = false,
     @required this.textSpan,
   }) : this.text = null,
-        this.alignment = null,
         this.padding = null,
         this.size = null,
         this.color = null,
@@ -50,13 +48,13 @@ class _TextViewState extends State<TextView> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: widget.alignment,
-      child: Padding(
+    return Padding(
         padding: widget.padding,
         child: widget.text != null ? SelectableText(widget.text,
+          showCursor: widget.isSelectable,
           maxLines: widget.maxLines,
-          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true) : ToolbarOptions(),
+          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
+                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
           style: TextStyle(
             fontSize: widget.size,
             letterSpacing: widget.letterSpacing,
@@ -65,25 +63,26 @@ class _TextViewState extends State<TextView> {
             color: widget.color,
           ),
         )
-        : SelectableText.rich(TextSpan(
-          children: <InlineSpan>[
-            for(var textView in widget.textSpan)
-              TextSpan(text: textView.text,
-                style: TextStyle(
-                  fontSize: textView.size,
-                  letterSpacing: textView.letterSpacing,
-                  fontWeight: textView.fontWeight,
-                  fontStyle: textView.fontStyle,
-                  color: textView.color,
-                ),
-              ),
-          ],
-        ),
+        : SelectableText.rich(
           maxLines: widget.maxLines,
-          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true) : ToolbarOptions(),
+          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
+                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
+          TextSpan(
+            children: <InlineSpan>[
+              for(var textView in widget.textSpan)
+                TextSpan(text: textView.text,
+                  style: TextStyle(
+                    fontSize: textView.size,
+                    letterSpacing: textView.letterSpacing,
+                    fontWeight: textView.fontWeight,
+                    fontStyle: textView.fontStyle,
+                    color: textView.color,
+                  ),
+                ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
 }
