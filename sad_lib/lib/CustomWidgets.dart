@@ -63,10 +63,6 @@ class _TextViewState extends State<TextView> {
           ),
         )
         : SelectableText.rich(
-          showCursor: false,
-          maxLines: widget.maxLines,
-          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
-                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
           TextSpan(
             children: <InlineSpan>[
               for(var textView in widget.textSpan)
@@ -81,6 +77,10 @@ class _TextViewState extends State<TextView> {
                 ),
             ],
           ),
+          showCursor: widget.isSelectable,
+          maxLines: widget.maxLines,
+          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
+                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
         ),
       );
   }
