@@ -5,7 +5,6 @@ import 'package:sad_lib/StorageClass.dart';
 
 class TextView extends StatefulWidget {
   final bool isSelectable;
-  final Alignment alignment;
   final EdgeInsets padding;
   final String text;
   final List<TextView> textSpan;
