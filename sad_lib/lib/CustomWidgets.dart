@@ -415,3 +415,99 @@ class ImageView extends StatelessWidget {
   }
 
 }
+
+
+
+//------------------------------------------------------------------------------
+
+class CustomCarousel extends StatefulWidget {
+  final double aspectRatio;
+  final List<Widget> children;
+  CustomCarousel({Key key, this.aspectRatio = 2.0, @required this.children}) : super(key: key);
+  @override
+  _CustomCarouselState createState() => _CustomCarouselState();
+}
+
+class _CustomCarouselState extends State<CustomCarousel> {
+
+  PageController _pageController;
+  double _counter;
+  int _index;
+
+  @override
+  void initState() {
+    _index = 0;
+    _counter = 0;
+    _pageController = PageController(initialPage: _index);
+    super.initState();
+    _timer();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: widget.aspectRatio,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          PageView(
+            controller: _pageController,
+            pageSnapping: true,
+            scrollDirection: Axis.horizontal,
+            children: widget.children,
+            onPageChanged: (i){
+              setState(() {
+                _index = i;
+                _counter = 0.0;
+              });
+            },
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.3,),
+              borderRadius: BorderRadius.circular(45.0,),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for(int i = 0; i < widget.children.length; i++)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
+                    child: Icon(Icons.brightness_1_sharp,
+                      size: 5.0,
+                      color: i == _index ? Colors.white : Colors.grey,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _timer(){
+    if(_counter >= 5){
+      _index = _index + 1;
+      if(_index >= widget.children.length){
+        _index = 0;
+      }
+      _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    }
+    Future.delayed(Duration(seconds: 1)).then((useless){
+      _counter = _counter + 1;
+      _timer();
+    });
+  }
+
+}
+
+
+//------------------------------------------------------------------------------
+
