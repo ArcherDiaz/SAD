@@ -7,6 +7,7 @@ class TextView extends StatefulWidget {
   final bool isSelectable;
   final EdgeInsets padding;
   final String text;
+  final TextAlign align;
   final List<TextView> textSpan;
   final double size;
   final Color color;
@@ -19,6 +20,7 @@ class TextView extends StatefulWidget {
     this.isSelectable = false,
     this.padding = EdgeInsets.zero,
     @required this.text,
+    this.align = TextAlign.left,
     this.size = 17.5,
     this.color = Colors.black,
     this.fontWeight = FontWeight.w400,
@@ -29,9 +31,10 @@ class TextView extends StatefulWidget {
 
   TextView.rich({Key key,
     this.isSelectable = false,
+    this.align = TextAlign.left,
+    this.padding = EdgeInsets.zero,
     @required this.textSpan,
   }) : this.text = null,
-        this.padding = null,
         this.size = null,
         this.color = null,
         this.fontWeight = null,
@@ -49,40 +52,84 @@ class _TextViewState extends State<TextView> {
   Widget build(BuildContext context) {
     return Padding(
         padding: widget.padding,
-        child: widget.text != null ? SelectableText(widget.text,
-          showCursor: widget.isSelectable,
-          maxLines: widget.maxLines,
-          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
-                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
-          style: TextStyle(
-            fontSize: widget.size,
-            letterSpacing: widget.letterSpacing,
-            fontWeight: widget.fontWeight,
-            fontStyle: widget.fontStyle,
-            color: widget.color,
-          ),
-        )
-        : SelectableText.rich(
-          TextSpan(
-            children: <InlineSpan>[
-              for(var textView in widget.textSpan)
-                TextSpan(text: textView.text,
-                  style: TextStyle(
-                    fontSize: textView.size,
-                    letterSpacing: textView.letterSpacing,
-                    fontWeight: textView.fontWeight,
-                    fontStyle: textView.fontStyle,
-                    color: textView.color,
-                  ),
-                ),
-            ],
-          ),
-          showCursor: widget.isSelectable,
-          maxLines: widget.maxLines,
-          toolbarOptions: widget.isSelectable == true ? ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true)
-                               : ToolbarOptions(cut: false, selectAll: false, paste: false, copy: false),
+        child: widget.isSelectable != true ? _normal()
+        : _selectable(),
+      );
+  }
+
+  Widget _normal(){
+    if(widget.text != null){
+      return Text(widget.text,
+        maxLines: widget.maxLines,
+        textAlign: widget.align,
+        style: TextStyle(
+          fontSize: widget.size,
+          letterSpacing: widget.letterSpacing,
+          fontWeight: widget.fontWeight,
+          fontStyle: widget.fontStyle,
+          color: widget.color,
         ),
       );
+    }else{
+      return Text.rich(
+        TextSpan(
+          children: <InlineSpan>[
+            for(var textView in widget.textSpan)
+              TextSpan(text: textView.text,
+                style: TextStyle(
+                  fontSize: textView.size,
+                  letterSpacing: textView.letterSpacing,
+                  fontWeight: textView.fontWeight,
+                  fontStyle: textView.fontStyle,
+                  color: textView.color,
+                ),
+              ),
+          ],
+        ),
+        maxLines: widget.maxLines,
+        textAlign: widget.align,
+      );
+    }
+  }
+
+  Widget _selectable(){
+    if(widget.text != null){
+      return SelectableText(widget.text,
+        showCursor: true,
+        autofocus: false,
+        maxLines: widget.maxLines,
+        textAlign: widget.align,
+        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
+        style: TextStyle(
+          fontSize: widget.size,
+          letterSpacing: widget.letterSpacing,
+          fontWeight: widget.fontWeight,
+          fontStyle: widget.fontStyle,
+          color: widget.color,
+        ),
+      );
+    }else{
+      return SelectableText.rich(
+        TextSpan(
+          children: <InlineSpan>[
+            for(var textView in widget.textSpan)
+              TextSpan(text: textView.text,
+                style: TextStyle(
+                  fontSize: textView.size,
+                  letterSpacing: textView.letterSpacing,
+                  fontWeight: textView.fontWeight,
+                  fontStyle: textView.fontStyle,
+                  color: textView.color,
+                ),
+              ),
+          ],
+        ),
+        showCursor: true,
+        maxLines: widget.maxLines,
+        textAlign: widget.align,
+        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
+      );
+    }
   }
 
 }
@@ -105,8 +152,7 @@ class ButtonView extends StatelessWidget {
   final double borderRadius;
   final Border border;
   final EdgeInsets padding;
-  final Icon icon;
-  final Widget child;
+  final List<Widget> children;
 
   ButtonView({Key key,
     this.alignment = Alignment.center,
@@ -118,8 +164,7 @@ class ButtonView extends StatelessWidget {
     this.gradient,
     this.border = const Border(),
     this.borderRadius = 7.5,
-    this.icon,
-    @required this.child,
+    @required this.children,
   }) : super(key: key);
 
   @override
@@ -163,13 +208,10 @@ class ButtonView extends StatelessWidget {
 
   Widget _contentView(){
     return Row(
-      mainAxisAlignment: (width == Width.stretch && icon == null) ? MainAxisAlignment.center : MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        if(icon != null) icon,
-        if(icon != null) SizedBox(width: 5.0,),
-        (width == Width.fit || icon == null) ? child : Expanded(child: child),
-      ],
+      mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: children,
     );
   }
 
