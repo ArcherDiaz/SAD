@@ -25,7 +25,7 @@ class TextView extends StatefulWidget {
     this.color = Colors.black,
     this.fontWeight = FontWeight.w400,
     this.fontStyle = FontStyle.normal,
-    this.letterSpacing = 1.0,
+    this.letterSpacing = 0.75,
     this.maxLines,
   }) : this.textSpan = null, super(key: key);
 
@@ -155,7 +155,7 @@ class ButtonView extends StatelessWidget {
   final List<Widget> children;
 
   ButtonView({Key key,
-    this.alignment = Alignment.center,
+    this.alignment,
     this.width = Width.fit,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
@@ -169,42 +169,51 @@ class ButtonView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: Padding(
-        padding: margin,
-        child: InkWell(
-          onTap: (){
-            onPressed.call();
-          },
-          hoverColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-          borderRadius: BorderRadius.circular(borderRadius),
-          splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-          child: width == Width.fit ? Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(borderRadius),
-              gradient: gradient,
-              border: border,
-            ),
-            child: _contentView(),
-          )
-              : Container(
-            padding: padding,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(borderRadius),
-              gradient: gradient,
-              border: border,
-            ),
-            child: _contentView(),
+    if(alignment == null){
+      return _buttonView();
+    }else {
+      return Align(
+        alignment: alignment,
+        child: _buttonView(),
+      );
+    }
+  }
+
+  Widget _buttonView(){
+    return Padding(
+      padding: margin,
+      child: InkWell(
+        onTap: (){
+          onPressed.call();
+        },
+        hoverColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(borderRadius),
+        splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        child: width == Width.fit ? Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(borderRadius),
+            gradient: gradient,
+            border: border,
           ),
+          child: _contentView(),
+        )
+            : Container(
+          padding: padding,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(borderRadius),
+            gradient: gradient,
+            border: border,
+          ),
+          child: _contentView(),
         ),
       ),
     );
   }
+
 
   Widget _contentView(){
     return Row(
@@ -421,9 +430,14 @@ class ImageView extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 class CustomCarousel extends StatefulWidget {
+  final Color circleColor;
   final double aspectRatio;
   final List<Widget> children;
-  CustomCarousel({Key key, this.aspectRatio = 2.0, @required this.children}) : super(key: key);
+  CustomCarousel({Key key,
+    this.circleColor = Colors.white,
+    this.aspectRatio = 2.0,
+    @required this.children,
+  }) : super(key: key);
   @override
   _CustomCarouselState createState() => _CustomCarouselState();
 }
@@ -469,6 +483,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
             },
           ),
           Container(
+            margin: EdgeInsets.only(top: 10.0,),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.3,),
               borderRadius: BorderRadius.circular(45.0,),
@@ -481,7 +496,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
                     padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
                     child: Icon(Icons.brightness_1_sharp,
                       size: 5.0,
-                      color: i == _index ? Colors.white : Colors.grey,
+                      color: i == _index ? widget.circleColor : Colors.grey,
                     ),
                   ),
               ],
