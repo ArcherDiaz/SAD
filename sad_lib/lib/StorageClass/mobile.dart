@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 
 class StorageClass {
+  StorageClass._();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
     Map<String, dynamic> data = Map();
@@ -130,7 +131,7 @@ class StorageClass {
     });
   }
 
-  Future<dynamic> deleteFile(String filename, {bool isDirectory = false}) {
+  Future<bool> deleteFile(String filename, {bool isDirectory = false}) {
     return getApplicationDocumentsDirectory().then((xDirectory){
       if(isDirectory == false){
         File file = File("${xDirectory.path}/$filename");
