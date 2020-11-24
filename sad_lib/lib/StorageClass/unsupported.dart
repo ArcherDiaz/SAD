@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 class StorageClass {
-  StorageClass._();
+  StorageClass();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
     throw "Storage Error: Platform Not Supported!";
