@@ -72,11 +72,7 @@ class AuthenticationClass{
     });
   }
 
-<<<<<<< HEAD
   Future<AuthResult> registerUser(String email, String password, {bool emailVerification = false}){
-=======
-  Future<dynamic> registerUser(String email, String password, {bool emailVerification = false}){
->>>>>>> 3fd2d629a1477c633149c11af8193c17426dc89a
     return _auth.createUserWithEmailAndPassword(email: email, password: password).then((credential){
       if(emailVerification == true){
         return credential.user.sendEmailVerification().then((useless){

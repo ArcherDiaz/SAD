@@ -1,7 +1,5 @@
 import 'dart:typed_data';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:sad_lib/StorageClass/StorageClass.dart';
 
 class TextView extends StatefulWidget {
   final bool isSelectable;
@@ -146,7 +144,7 @@ class ButtonView extends StatelessWidget {
   final EdgeInsets margin;
   final Alignment alignment;
   final Width width;
-  final GestureTapCallback onPressed;
+  final void Function() onPressed;
   final Color color;
   final Gradient gradient;
   final double borderRadius;
@@ -275,35 +273,52 @@ class CustomLoader extends StatelessWidget {
 
 //------------------------------------------------------------------------------
 
-enum FutureType {file, network, firebaseStorage}
+enum ImageType {network, custom}
 typedef GetImageCallBack = Uint8List Function(String key); ///This function requires an image, that belongs to the given key
 typedef AddImageCallBack = void Function(String key, Uint8List iamge); ///This function provides the key/url and image to the user to store or utilize
 typedef ContainsImageCallBack = bool Function(String key); ///This function provides a key to the user tp check their image Map already contains a specific image
 
 class ImageView extends StatelessWidget {
 
-  final FirebaseStorage _fireStorage = FirebaseStorage.instance;
-
   final ColorFilter colorFilter;
   final double radius;
   final double aspectRatio;
   final EdgeInsets margin;
+  final BoxFit fit;
+  final double maxSize;
 
   final String imageKey;
-  final StorageClass storage;
+  final ImageType imageType;
+
+  final Future<Uint8List> imageFuture; final Future<Uint8List> Function() getCustomImage;
   final GetImageCallBack getImage;
   final AddImageCallBack addImage;
   final ContainsImageCallBack containsImage;
-  final FutureType futureType;
-  final BoxFit fit;
-  final double maxSize;
-  final Widget errorView;
 
+  final Widget errorView;
   final CustomLoader customLoader;
 
-  ImageView({Key key,
+  ImageView.custom({Key key,
     @required this.imageKey,
-    @required this.storage,
+
+    @required this.getCustomImage,
+    @required this.getImage,
+    @required this.addImage,
+    @required this.containsImage,
+
+    this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+    this.margin = EdgeInsets.zero,
+    this.radius = 0.0,
+    this.aspectRatio = 1.0,
+    this.maxSize = double.infinity,
+    this.fit = BoxFit.cover,
+
+    @required this.customLoader,
+    this.errorView,
+  }) : this.imageType = ImageType.custom, this.imageFuture = getCustomImage.call(), super(key: key);
+
+  ImageView.network({Key key,
+    @required this.imageKey,
 
     @required this.getImage,
     @required this.addImage,
@@ -314,62 +329,13 @@ class ImageView extends StatelessWidget {
     this.radius = 0.0,
     this.aspectRatio = 1.0,
 
-    this.futureType = FutureType.firebaseStorage,
     this.maxSize = double.infinity,
     this.fit = BoxFit.cover,
     @required this.customLoader,
 
     this.errorView,
-  }) : super(key: key);
+  }) : this.imageFuture = null, this.getCustomImage = null, this.imageType = ImageType.network, super(key: key);
 
-  Future<Uint8List> getImageFromFile(String key){
-    if(containsImage.call(key) == true){
-      // if imageList contains this key, then just get the image
-      return Future.value(getImage.call(key));
-    }else{
-      return storage.readImage("$key.diaz").then((image){
-        if(image == null || image.isEmpty){
-          print("ImageView | getImageFromFile() Error: no image found at the requested destination; $key");
-          return null;
-        }else{
-          addImage.call(key, image);
-          return image;
-        }
-      });
-    }
-  }
-
-  Future<Uint8List> getImageFromDB(String key){
-    return getImageFromFile(key).then((image){
-      if(image != null){
-        return image;
-      }else{
-        if(containsImage.call(key) == true){
-          return Future.value(getImage(key));
-        }else{
-          return _fireStorage.ref().child(key).getData(10000000).then((image){
-            addImage.call(key, image);
-            return image;
-          }).catchError((onError){
-            print("ImageView | Firebase Storage Error: ${onError.toString()}");
-            return null;
-          });
-        }
-      }
-    }).catchError((onError){
-      if(containsImage.call(key) == true){
-        return Future.value(getImage(key));
-      }else{
-        return _fireStorage.ref().child(key).getData(10000000).then((image){
-          addImage.call(key, image);
-          return image;
-        }).catchError((onError){
-          print("ImageView | Firebase Storage Error: ${onError.toString()}");
-          return null;
-        });
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -379,7 +345,7 @@ class ImageView extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: ColorFiltered(
           colorFilter: colorFilter,
-          child: futureType == FutureType.network ? _networkImage() : _futureBuilder(),
+          child: imageType == ImageType.network ? _networkImage() : _customImage(),
         ),
       ),
     );
@@ -400,9 +366,9 @@ class ImageView extends StatelessWidget {
     );
   }
 
-  Widget _futureBuilder(){
+  Widget _customImage(){
     return FutureBuilder(
-      future: futureType == FutureType.firebaseStorage ? getImageFromDB(imageKey) : getImageFromFile(imageKey),
+      future: imageFuture,
       builder: (context, snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           if(snapshot.hasData && snapshot.data != null){
@@ -416,7 +382,7 @@ class ImageView extends StatelessWidget {
               alignment: Alignment.center,
               width: maxSize,
               height: maxSize/aspectRatio,
-              child: customLoader
+              child: customLoader,
           );
         }
       },
