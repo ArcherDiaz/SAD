@@ -22,85 +22,142 @@ class AuthenticationClass{
   }
 
   bool activeUser(){
-    if(_auth.currentUser == null){
+    if(_auth.currentUser == null || _auth.currentUser.isAnonymous == true){
       return false;
     }else{
       return true;
     }
   }
 
-  Map<String, dynamic> getUserInfo(){
+  UserInfo getUserInfo(){
     if(_auth.currentUser == null){
       print("Authentication Class | getUserInfo() Warning: trying to get user info/details when there is no active user logged in.");
       return null;
     }else {
-      return {
-        "uid": _auth.currentUser.uid,
-        "email": _auth.currentUser.email,
-        "verification Status": _auth.currentUser.emailVerified,
-        "photo URL": _auth.currentUser.photoURL,
-        "user Name": _auth.currentUser.displayName,
-        "creation Date": _auth.currentUser.metadata.creationTime,
-        "last Signed In": _auth.currentUser.metadata.lastSignInTime,
-      };
+      return UserInfo(
+        uid: _auth.currentUser.uid,
+        email: _auth.currentUser.email,
+        verificationStatus: _auth.currentUser.emailVerified,
+        photoURL: _auth.currentUser.photoURL,
+        userName: _auth.currentUser.displayName,
+        creationDate: _auth.currentUser.metadata.creationTime,
+        lastSignedIn: _auth.currentUser.metadata.lastSignInTime,
+      );
     }
   }
 
-  Future<Map<String, dynamic>> logInUser(String email, String password){
+  Future<AuthResult> logInUser(String email, String password){
     return _auth.signInWithEmailAndPassword(email: email, password: password).then((credential){
       print("Authentication Class | SUCCESSFUL user sign up");
-      return {
-        "success": true,
-        "uid": credential.user.uid,
-        "email": credential.user.email,
-        "creation Date": credential.user.metadata.creationTime,
-        "last Signed In": credential.user.metadata.lastSignInTime,
-      };
+      return AuthResult(
+        successState: true,
+        message: "",
+        info: UserInfo(
+          uid: credential.user.uid,
+          email: credential.user.email,
+          verificationStatus: credential.user.emailVerified,
+          photoURL: credential.user.photoURL,
+          userName: credential.user.displayName,
+          creationDate: credential.user.metadata.creationTime,
+          lastSignedIn: credential.user.metadata.lastSignInTime,
+        ),
+      );
     }).catchError((onError){
       print("Authentication Class | Logging In Error: ${onError.toString()}");
-      return {
-        "success": false,
-        "message": "Authentication Class | Logging In Error: ${onError.toString()}",
-      };
+      return AuthResult(
+        successState: false,
+        message: "Authentication Class | Logging In Error: ${onError.toString()}",
+        info: null,
+      );
     });
   }
 
-  Future<Map<String, dynamic>> registerUser(String email, String password, {bool emailVerification = false}){
+  Future<AuthResult> registerUser(String email, String password, {bool emailVerification = false}){
     return _auth.createUserWithEmailAndPassword(email: email, password: password).then((credential){
       if(emailVerification == true){
         return credential.user.sendEmailVerification().then((useless){
           print("Authentication Class | SUCCESSFUL user sign up with verification email sent");
-          return {
-            "success": true,
-            "uid": credential.user.uid,
-            "email": credential.user.email,
-            "creation Date": credential.user.metadata.creationTime,
-            "last Signed In": credential.user.metadata.lastSignInTime,
-          };
+          return AuthResult(
+            successState: true,
+            message: "",
+            info: UserInfo(
+              uid: credential.user.uid,
+              email: credential.user.email,
+              verificationStatus: credential.user.emailVerified,
+              photoURL: credential.user.photoURL,
+              userName: credential.user.displayName,
+              creationDate: credential.user.metadata.creationTime,
+              lastSignedIn: credential.user.metadata.lastSignInTime,
+            ),
+          );
         }).catchError((onError){
           print("Authentication Class | Email Verification Request Error: ${onError.toString()}");
-          return {
-            "success": false,
-            "message": "Authentication Class | Email Verification Request Error: ${onError.toString()}",
-          };
+          return AuthResult(
+            successState: false,
+            message: "Authentication Class | Email Verification Request Error: ${onError.toString()}",
+            info: null,
+          );
         });
       }else{
         print("Authentication Class | SUCCESSFUL user sign up");
-        return {
-          "success": true,
-          "uid": credential.user.uid,
-          "email": credential.user.email,
-          "creation Date": credential.user.metadata.creationTime,
-          "last Signed In": credential.user.metadata.lastSignInTime,
-        };
+        return AuthResult(
+          successState: true,
+          message: "",
+          info: UserInfo(
+            uid: credential.user.uid,
+            email: credential.user.email,
+            verificationStatus: credential.user.emailVerified,
+            photoURL: credential.user.photoURL,
+            userName: credential.user.displayName,
+            creationDate: credential.user.metadata.creationTime,
+            lastSignedIn: credential.user.metadata.lastSignInTime,
+          ),
+        );
       }
     }).catchError((onError){
       print("Authentication Class | Registering Error: ${onError.toString()}");
-      return {
-        "success": false,
-        "message": "Authentication Class | Registering Error: ${onError.toString()}",
-      };
+      return AuthResult(
+        successState: false,
+        message: "Authentication Class | Registering Error: ${onError.toString()}",
+        info: null,
+      );
     });
   }
+
+}
+
+class AuthResult{
+
+  bool successState;
+  String message;
+  UserInfo info;
+
+  AuthResult({
+    this.successState,
+    this.message,
+    this.info,
+  });
+
+}
+
+class UserInfo{
+
+  String uid;
+  String email;
+  bool verificationStatus;
+  String photoURL;
+  String userName;
+  DateTime creationDate;
+  DateTime lastSignedIn;
+
+  UserInfo({
+    this.uid,
+    this.email,
+    this.verificationStatus,
+    this.photoURL,
+    this.userName,
+    this.creationDate,
+    this.lastSignedIn,
+  });
 
 }
