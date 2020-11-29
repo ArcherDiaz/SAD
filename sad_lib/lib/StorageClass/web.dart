@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:html' as html;
 
 class StorageClass {
-  StorageClass._();
+  StorageClass();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
     Map<String, dynamic> data = Map();

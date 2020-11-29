@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 
 class StorageClass {
-  StorageClass._();
+  StorageClass();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
     Map<String, dynamic> data = Map();
