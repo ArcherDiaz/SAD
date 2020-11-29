@@ -48,7 +48,7 @@ class AuthenticationClass{
 
   Future<AuthResult> logInUser(String email, String password){
     return _auth.signInWithEmailAndPassword(email: email, password: password).then((credential){
-      print("Authentication Class | SUCCESSFUL user sign up");
+      print("Authentication Class | SUCCESSFUL user log in");
       return AuthResult(
         successState: true,
         message: "",
