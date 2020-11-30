@@ -189,7 +189,7 @@ class ButtonView extends StatelessWidget {
         splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
         child: width == Width.fit ? Container(
           padding: padding,
-          decoration: orderRadius == 0.0 ? BoxDecoration(
+          decoration: borderRadius == 0.0 ? BoxDecoration(
             color: color,
             gradient: gradient,
             border: border,
