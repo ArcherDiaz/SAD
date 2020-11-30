@@ -191,7 +191,7 @@ class ButtonView extends StatelessWidget {
           padding: padding,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: borderRadius == 0.0 ? BorderRadius.zero : BorderRadius.circular(borderRadius),
+            borderRadius: borderRadius == 0.0 ? null : BorderRadius.circular(borderRadius),
             gradient: gradient,
             border: border,
           ),
