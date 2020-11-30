@@ -12,11 +12,13 @@ class AuthenticationClass{
           print("Authentication Class | Anonymous Sign In: ${onError.toString()}");
         });
       }else{
-        _auth.currentUser.reload().then((useless){
-          print("Authentication Class | SUCCESSFUL active user reload");
-        }).catchError((onError){
-          print("Authentication Class | Reloading Current User: ${onError.toString()}");
-        });
+        if(_auth.currentUser.isAnonymous == false) {
+          _auth.currentUser.reload().then((useless) {
+            print("Authentication Class | SUCCESSFUL active user reload");
+          }).catchError((onError) {
+            print("Authentication Class | Reloading Current User: ${onError.toString()}");
+          });
+        }
       }
     }
   }
@@ -34,15 +36,20 @@ class AuthenticationClass{
       print("Authentication Class | getUserInfo() Warning: trying to get user info/details when there is no active user logged in.");
       return null;
     }else {
-      return UserInfo(
-        uid: _auth.currentUser.uid,
-        email: _auth.currentUser.email,
-        verificationStatus: _auth.currentUser.emailVerified,
-        photoURL: _auth.currentUser.photoURL,
-        userName: _auth.currentUser.displayName,
-        creationDate: _auth.currentUser.metadata.creationTime,
-        lastSignedIn: _auth.currentUser.metadata.lastSignInTime,
-      );
+      if(_auth.currentUser.isAnonymous == true){
+        print("Authentication Class | getUserInfo() Warning: trying to get user info/details when user is ANONYMOUS.");
+        return null;
+      }else{
+        return UserInfo(
+          uid: _auth.currentUser.uid,
+          email: _auth.currentUser.email,
+          verificationStatus: _auth.currentUser.emailVerified,
+          photoURL: _auth.currentUser.photoURL,
+          userName: _auth.currentUser.displayName,
+          creationDate: _auth.currentUser.metadata.creationTime,
+          lastSignedIn: _auth.currentUser.metadata.lastSignInTime,
+        );
+      }
     }
   }
 
