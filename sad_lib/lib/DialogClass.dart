@@ -5,26 +5,26 @@ import 'package:sad_lib/CustomWidgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DialogClass {
-  //This class handle dialogs that are used throughout the app
-  //and also does a couple of file handling(saves), with the instruction dialog
-
-  BuildContext context;
+  ///This class handle dialogs that are used throughout the app
+  ///and also does a couple of file handling(saves), with the instruction dialog
 
   Color background;
   Color buttonColor;
   Color buttonTextColor;
   Color textColor;
 
-  DialogClass(this.context, {@required this.background, @required this.buttonColor, @required this.buttonTextColor, @required this.textColor});
+  DialogClass({@required this.background, @required this.buttonColor, @required this.buttonTextColor, @required this.textColor});
 
-  Future<bool> assureDialog({@required String content, @required Color color, bool dismissible = true, String title = "null", bool negativeButton = true, String negative = "CANCEL", String positive = "CONFIRM"}) {
+  Future<bool> assureDialog(BuildContext context, {@required String message, bool dismissible = true, String title = "null", bool negativeButton = true, String negative = "CANCEL", String positive = "CONFIRM"}) {
     return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
       return Stack(
         alignment: Alignment.center,
         children: <Widget>[
           GestureDetector(
             onTap: (){
-              Navigator.of(context).pop();
+              if(dismissible == true) {
+                Navigator.of(context).pop();
+              }
             },
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaY: 3.0, sigmaX: 3.0),
@@ -40,18 +40,11 @@ class DialogClass {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0,),
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: SelectableText(content, textAlign: TextAlign.start,
-                      showCursor: true,
-                      toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 17.5,
-                        color: textColor,
-                      ),
-                    ),
+                  TextView(text: message,
+                    padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0,),
+                    align: TextAlign.start,
+                    isSelectable: true,
+                    color: textColor,
                   ),
                   Row(
                     children: <Widget>[
@@ -63,7 +56,7 @@ class DialogClass {
                         children: [
                           TextView(text: negative.toUpperCase(),
                             size: 15.0,
-                            color: color,
+                            color: buttonColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ],
@@ -77,7 +70,7 @@ class DialogClass {
                         children: [
                           TextView(text: positive.toUpperCase(),
                             size: 15.0,
-                            color: color,
+                            color: buttonColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ],
@@ -94,14 +87,16 @@ class DialogClass {
   }
 
 
-  Future<int> amountDialog({@required Color color, String title = "Enter An Amount", bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
+  Future<int> amountDialog(BuildContext context, {String title = "Enter An Amount", bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
     ValueNotifier<int> amt = ValueNotifier(0);
     return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
       return Stack(
         children: <Widget>[
           GestureDetector(
             onTap: (){
-              Navigator.of(context).pop();
+              if(dismissible == true) {
+                Navigator.of(context).pop();
+              }
             },
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaY: 3.0, sigmaX: 3.0),
@@ -130,7 +125,7 @@ class DialogClass {
                       for(int i = 1; i <= 50; i ++)
                         TextView(text: "$i",
                           padding: EdgeInsets.all(5.0),
-                          color: color,
+                          color: buttonColor,
                           size: 15.0,
                           fontWeight: FontWeight.w500,
                         ),
@@ -149,7 +144,7 @@ class DialogClass {
                       margin: EdgeInsets.only(bottom: 10.0),
                       children: [
                         TextView(text: negative.toUpperCase(),
-                          color: color,
+                          color: buttonColor,
                           size: 15.0,
                           fontWeight: FontWeight.w500,
                         ),
@@ -168,7 +163,7 @@ class DialogClass {
                           margin: EdgeInsets.only(bottom: 10.0),
                           children: [
                             TextView(text: "${positive.toUpperCase()} ($number)",
-                              color: color,
+                              color: buttonColor,
                               size: 15.0,
                               fontWeight: FontWeight.w500,
                             ),
@@ -188,8 +183,8 @@ class DialogClass {
   }
 
 
-  //dialog for inputting names, which are short texts
-  Future<String> nameDialog({@required Color color, @required String title, @required List<String> compare, int maxLength = 30, bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
+  ///dialog for inputting names, which are short texts
+  Future<String> nameDialog(BuildContext context, {@required String title, @required List<String> compare, int maxLength = 30, bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
     String filename;
     return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
         return Stack(
@@ -197,7 +192,9 @@ class DialogClass {
           children: <Widget>[
             GestureDetector(
               onTap: (){
-                Navigator.of(context).pop();
+                if(dismissible == true) {
+                  Navigator.of(context).pop();
+                }
               },
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaY: 3.0, sigmaX: 3.0),
@@ -230,17 +227,17 @@ class DialogClass {
                         onSubmitted: (text) {
                           if (text.isNotEmpty && text != ".") {
                             if (compare.contains(text)) {
-                              assureDialog(content: "This entry already exists in the list.\nPlease provide a unique entry", color: color, dismissible: true);
+                              assureDialog(context, message: "This entry already exists in the list.\nPlease provide a unique entry", dismissible: true,);
                             }else{
                               Navigator.of(context).pop(text);
                             }
                           }
                         },
-                        cursorColor: color,
+                        cursorColor: buttonColor,
                         decoration: InputDecoration(
                           labelText: title,
-                          labelStyle: TextStyle(color: color),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: color)),
+                          labelStyle: TextStyle(color: textColor),
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: buttonColor)),
                           contentPadding: EdgeInsets.all(10.0),
                         ),
                       ),
@@ -256,7 +253,7 @@ class DialogClass {
                           margin: EdgeInsets.only(bottom: 10.0),
                           children: [
                             TextView(text: negative.toUpperCase(),
-                              color: color,
+                              color: buttonColor,
                               size: 15.0,
                               fontWeight: FontWeight.w500,
                             ),
@@ -266,7 +263,7 @@ class DialogClass {
                           onPressed: (){
                             if (filename.isNotEmpty && filename != ".") {
                               if (compare.contains(filename)) {
-                                assureDialog(content: "This entry already exists in the list.\nPlease provide a unique entry.", color: color, dismissible: true);
+                                assureDialog(context, message: "This entry already exists in the list.\nPlease provide a unique entry.", dismissible: true);
                               }else{
                                 Navigator.of(context).pop(filename);
                               }
@@ -276,7 +273,7 @@ class DialogClass {
                           margin: EdgeInsets.only(bottom: 10.0),
                           children: [
                             TextView(text: positive.toUpperCase(),
-                              color: color,
+                              color: buttonColor,
                               size: 15.0,
                               fontWeight: FontWeight.w500,
                             ),
@@ -295,15 +292,17 @@ class DialogClass {
   }
 
 
-  //dialog for inputting long pieces of texts
-  Future<String> textInputDialog({@required Color color, @required String title, int maxLength = 256, bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
+  ///dialog for inputting long pieces of texts
+  Future<String> textInputDialog(BuildContext context, {@required String title, int maxLength = 256, bool dismissible = true, String negative = "CANCEL", String positive = "CONTINUE"}) {
     String input;
     return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
       return Stack(
         children: <Widget>[
           GestureDetector(
             onTap: (){
-              Navigator.of(context).pop();
+              if(dismissible == true) {
+                Navigator.of(context).pop();
+              }
             },
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaY: 3.0, sigmaX: 3.0),
@@ -340,11 +339,11 @@ class DialogClass {
                         Navigator.of(context).pop(text);
                       }
                     },
-                    cursorColor: color,
+                    cursorColor: buttonColor,
                     decoration: InputDecoration(
                       labelText: title,
-                      labelStyle: TextStyle(color: color),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: color)),
+                      labelStyle: TextStyle(color: textColor),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: buttonColor)),
                       contentPadding: EdgeInsets.all(10.0),
                     ),
                   ),
@@ -358,7 +357,7 @@ class DialogClass {
                         padding: EdgeInsets.all(10.0),
                         children: [
                           TextView(text: negative.toUpperCase(),
-                            color: color,
+                            color: buttonColor,
                             size: 15.0,
                             fontWeight: FontWeight.w500,
                           ),
@@ -373,7 +372,7 @@ class DialogClass {
                         padding: EdgeInsets.all(10.0),
                         children: [
                           TextView(text: positive.toUpperCase(),
-                            color: color,
+                            color: buttonColor,
                             size: 15.0,
                             fontWeight: FontWeight.w500,
                           ),
@@ -392,7 +391,7 @@ class DialogClass {
   }
 
 
-  Future<bool> instructionDialog({@required String title, @required String message, @required String jsonKey, @required Size size, @required Color color, String imagePath = "assets/info.webp", String filename = "instructions.diaz", String button = "OKAY", bool checkBox = true}) {
+  Future<bool> instructionDialog(BuildContext context, {@required String title, @required String message, String imagePath = "assets/info.webp", String button = "OKAY", bool checkBox = true, CustomClipper clipper,}) {
     ValueNotifier<bool> valueNotifier = ValueNotifier(false);
     return showDialog(context: context, barrierDismissible: true, builder: (context) {
       return Stack(
@@ -409,12 +408,12 @@ class DialogClass {
           Dialog(
             backgroundColor: Colors.transparent,
             child: ClipPath(
-              clipper: InstructionShape(),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(10.0),
-                scrollDirection: Axis.vertical,
-                child: Container(
-                  color: background,
+              clipper: clipper,
+              child: Container(
+                color: background,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(10.0),
+                  scrollDirection: Axis.vertical,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
@@ -422,12 +421,12 @@ class DialogClass {
                         alignment: Alignment.topCenter,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(90.0),
-                          child: Image.asset(imagePath, width: size.width / 5,),
+                          child: Image.asset(imagePath, width: MediaQuery.of(context).size.width / 5,),
                         ),
                       ),
                       TextView(text: title,
                         padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-                        color: color,
+                        color: buttonColor,
                         size: 22.5,
                         fontWeight: FontWeight.w500,
                       ),
@@ -482,7 +481,7 @@ class DialogClass {
                             padding: EdgeInsets.all(10.0),
                             children: [
                               TextView(text: button.toUpperCase(),
-                                color: color,
+                                color: buttonColor,
                                 size: 15.0,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -502,8 +501,8 @@ class DialogClass {
   }
 
 
-  //view media dialog
-  Future<void> showMediaDialog(Uint8List media) {
+  ///view media dialog
+  Future<void> showMediaDialog(BuildContext context, Uint8List media) {
     return showDialog(context: context, barrierDismissible: true, builder: (BuildContext context) {
         return Material(
           color: Colors.transparent,
@@ -543,8 +542,8 @@ class DialogClass {
   }
 
 
-  //web view Dialog
-  Future<void> showWebViewDialog(String url, String linkName, {JavascriptChannel javaScriptChannel}) {
+  ///web view Dialog
+  Future<void> showWebViewDialog(BuildContext context, String url, String linkName, {JavascriptChannel javaScriptChannel}) {
     return showDialog(context: context, barrierDismissible: true, builder: (BuildContext context) {
       JavascriptChannel exitChannel = JavascriptChannel(
           name: "Listener",
@@ -622,14 +621,16 @@ class DialogClass {
   }
 
 
-  Future<void> staticListDialog({@required List<dynamic> list}) {
-    return showDialog(context: context, barrierDismissible: true, builder: (context) {
+  Future<void> staticListDialog(BuildContext context, {@required List<dynamic> list, bool dismissible = true}) {
+    return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
       return Stack(
         alignment: Alignment.center,
         children: <Widget>[
           GestureDetector(
             onTap: (){
-              Navigator.of(context).pop();
+              if(dismissible == true) {
+                Navigator.of(context).pop();
+              }
             },
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaY: 3.0, sigmaX: 3.0),
@@ -679,14 +680,15 @@ class DialogClass {
   }
 
 
-  //loading dialog
-  Future<dynamic> showLoadingDialog(Color color, Future<dynamic> Function() process) {
+  ///loading dialog
+  Future<dynamic> showLoadingDialog(BuildContext context, Future<dynamic> Function() process, {Color color,}) {
     return showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
         process.call().then((map){
           Navigator.of(context).pop(map);
           // map example; {
-          //    "result": "successful".
-          //    "success": bool
+          //    "data": "data",
+          //    "message": "successful",
+          //    "success": true
           //    }
         });
         return WillPopScope(
@@ -699,7 +701,7 @@ class DialogClass {
                 child: Container(color: Colors.transparent,),
               ),
               CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(color),
+                valueColor: AlwaysStoppedAnimation<Color>(color == null ? buttonColor : color),
               ),
             ],
           ),
@@ -708,25 +710,4 @@ class DialogClass {
     );
   }
 
-}
-
-class InstructionShape extends CustomClipper<Path>{
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0.0, size.width/9);
-    path.lineTo(size.width/10, size.width/10);
-    path.quadraticBezierTo(size.width*0.25, 0.0, size.width*.50, 0.0);
-    path.quadraticBezierTo(size.width*0.75, 0.0, size.width-(size.width/10), size.width/10);
-    path.lineTo(size.width, size.width/9);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0.0, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
-  }
 }
