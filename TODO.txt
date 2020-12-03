@@ -1,4 +1,2 @@
-- give the ButtonView a direction property; vertical and horizontal, which will control whether the children is laid out in a column or a row
 - go over the ButtonView's splash color, currently only works on white
 - give the TextView Widget an onPressed callback function
-- ImageView needs to handle for network images

@@ -14,7 +14,8 @@ class StorageClass {
   }
 
   Future<void> writeToMap(String filename, Map<String, dynamic> data){
-    html.window.localStorage.update(filename, (value) => json.encode(data), ifAbsent: ()=> json.encode(data));
+    String fileData = json.encode(data);
+    html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
     return Future.value(null);
   }
 
@@ -28,7 +29,8 @@ class StorageClass {
         contents.update(key, (value) => value+data, ifAbsent: () => data);
       }
 
-      html.window.localStorage.update(filename, (value) => json.encode(contents), ifAbsent: ()=> json.encode(contents));
+      String fileData = json.encode(contents);
+      html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
       return Future.value(contents);
     });
   }
@@ -46,7 +48,8 @@ class StorageClass {
         });
       }
 
-      html.window.localStorage.update(filename, (value) => json.encode(contents), ifAbsent: ()=> json.encode(contents));
+      String fileData = json.encode(contents);
+      html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
       return Future.value(contents);
     });
   }
@@ -57,7 +60,8 @@ class StorageClass {
         contents.remove(key);
       }
 
-      html.window.localStorage.update(filename, (value) => json.encode(contents), ifAbsent: ()=> json.encode(contents));
+      String fileData = json.encode(contents);
+      html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
       return Future.value(null);
     });
   }
@@ -75,7 +79,8 @@ class StorageClass {
         contents[key].removeLast();
       }
 
-      html.window.localStorage.update(filename, (value) => json.encode(contents), ifAbsent: ()=> json.encode(contents));
+      String fileData = json.encode(contents);
+      html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
       return Future.value(true);
     });
   }
@@ -89,7 +94,8 @@ class StorageClass {
         }
       }
 
-      html.window.localStorage.update(filename, (value) => json.encode(contents), ifAbsent: ()=> json.encode(contents));
+      String fileData = json.encode(contents);
+      html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
       return Future.value(null);
     });
   }
@@ -128,7 +134,8 @@ class StorageClass {
 
 
   Future<void> saveImage(String filename, Uint8List bytes){
-    html.window.localStorage.update(filename, (value) => json.encode(bytes), ifAbsent: ()=> json.encode(bytes));
+    String fileData = json.encode(bytes);
+    html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
     return Future.value(null);
   }
   Future<Uint8List> readImage(String filename){

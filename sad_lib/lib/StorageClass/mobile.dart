@@ -12,6 +12,7 @@ class StorageClass {
       File file = File("${xDirectory.path}/$filename");
       return file.exists().then((flag){
         if(flag) {
+
           data = json.decode(file.readAsStringSync());
           return data;
         }else{
@@ -24,7 +25,8 @@ class StorageClass {
   Future<void> writeToMap(String filename, Map<String, dynamic> data){
     return getApplicationDocumentsDirectory().then((xDirectory) {
       return File("${xDirectory.path}/$filename").create(recursive: true).then((file){
-        return file.writeAsString(json.encode(data), flush: true, mode: FileMode.write).then((value) {
+        String fileData = json.encode(data);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value) {
           return;
         });
       });
@@ -42,7 +44,8 @@ class StorageClass {
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
-        return file.writeAsString(json.encode(contents), flush: true, mode: FileMode.write).then((value){
+        String fileData = json.encode(contents);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
           return contents;
         });
       });
@@ -63,7 +66,8 @@ class StorageClass {
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
-        return file.writeAsString(json.encode(contents), flush: true, mode: FileMode.write).then((value){
+        String fileData = json.encode(contents);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
           return contents;
         });
       });
@@ -77,7 +81,8 @@ class StorageClass {
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
-        return file.writeAsString(json.encode(contents), flush: true, mode: FileMode.write).then((value){
+        String fileData = json.encode(contents);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
           return;
         });
       });
@@ -98,7 +103,8 @@ class StorageClass {
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
-        return file.writeAsString(jsonEncode(contents), flush: true, mode: FileMode.write).then((value) {
+        String fileData = json.encode(contents);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value) {
           return true;
         });
       });
@@ -115,7 +121,8 @@ class StorageClass {
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
-        return file.writeAsString(jsonEncode(contents), flush: true, mode: FileMode.write).then((value) {
+        String fileData = json.encode(contents);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value) {
           return;
         });
       });

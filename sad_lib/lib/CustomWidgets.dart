@@ -139,27 +139,34 @@ class _TextViewState extends State<TextView> {
 enum Width {fit, stretch}
 ///fit = make button be normal size to fit content
 ///stretch = make button be stretch to fit screen width
+enum Direction {vertical, horizontal}
+///fit = make button be normal size to fit content
+///stretch = make button be stretch to fit screen width
 class ButtonView extends StatelessWidget {
 
   final EdgeInsets margin;
   final Alignment alignment;
   final Width width;
+  final Direction direction;
   final void Function() onPressed;
   final Color color;
   final Gradient gradient;
   final double borderRadius;
   final Border border;
   final EdgeInsets padding;
+  final List<BoxShadow> boxShadow;
   final List<Widget> children;
 
   ButtonView({Key key,
     this.alignment,
     this.width = Width.fit,
+    this.direction = Direction.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
     this.color = Colors.transparent,
     this.gradient,
+    this.boxShadow,
     this.border = const Border(),
     this.borderRadius = 7.5,
     @required this.children,
@@ -193,11 +200,13 @@ class ButtonView extends StatelessWidget {
             color: color,
             gradient: gradient,
             border: border,
+            boxShadow: boxShadow == null ? [] : boxShadow,
           ) : BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(borderRadius),
             gradient: gradient,
             border: border,
+            boxShadow: boxShadow == null ? [] : boxShadow,
           ),
           child: _contentView(),
         )
@@ -218,12 +227,21 @@ class ButtonView extends StatelessWidget {
 
 
   Widget _contentView(){
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: children,
-    );
+    if(direction == Direction.horizontal) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children,
+      );
+    }else{
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children,
+      );
+    }
   }
 
 }
@@ -324,9 +342,9 @@ class ImageView extends StatelessWidget {
   ImageView.network({Key key,
     @required this.imageKey,
 
-    @required this.getImage,
-    @required this.addImage,
-    @required this.containsImage,
+    this.getImage,
+    this.addImage,
+    this.containsImage,
 
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
     this.margin = EdgeInsets.zero,
@@ -365,6 +383,13 @@ class ImageView extends StatelessWidget {
           return widget;
         }else {
           return customLoader;
+        }
+      },
+      errorBuilder: (context, object, stackTrace){
+        if(errorView == null){
+          return TextView(text: "Unable to load image..",);
+        }else{
+          return errorView;
         }
       },
     );

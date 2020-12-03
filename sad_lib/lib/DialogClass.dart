@@ -49,7 +49,8 @@ class DialogClass {
                   ),
                   Row(
                     children: <Widget>[
-                      if(negativeButton) ButtonView(
+                      if(negativeButton)
+                        ButtonView(
                         onPressed: (){
                           Navigator.of(context).pop(false);
                         },
@@ -807,6 +808,8 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    final bool isDesktop = size.width > 700 ? true : false;
     final DialogTheme dialogTheme = DialogTheme.of(context);
     final EdgeInsets effectivePadding = MediaQuery.of(context).viewInsets + (insetPadding ?? const EdgeInsets.all(0.0));
     return AnimatedPadding(
@@ -819,18 +822,13 @@ class CustomDialog extends StatelessWidget {
         removeRight: true,
         removeBottom: true,
         context: context,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width/3,),
-            child: Material(
-              color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
-              elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
-              shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
-              type: MaterialType.card,
-              clipBehavior: clipBehavior,
-              child: child,
-            ),
-          ),
+        child: Material(
+          color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
+          elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
+          shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
+          type: MaterialType.card,
+          clipBehavior: clipBehavior,
+          child: child,
         ),
       ),
     );
