@@ -146,7 +146,7 @@ class FormatClass{
   String formatMoney(double num){
     String a = "$num";
     String upper = "";
-    String b = a.substring(0, a.indexOf("."));
+    String b = a.contains(".") ? a.substring(0, a.indexOf(".")) : a;
     for(int i = (b.length-1); i >=0; i--){
       if((i%3) == 0 && (b.length - i) > 3){
         upper = b[i] + "," + upper;
