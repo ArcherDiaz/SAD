@@ -752,7 +752,7 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final DialogTheme dialogTheme = DialogTheme.of(context);
-    final EdgeInsets insetPadding = (size.width > 700) ? EdgeInsets.symmetric(horizontal: size.width/4, vertical: size.height/12) : EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
+    final EdgeInsets insetPadding = (size.width > 700) ? EdgeInsets.symmetric(horizontal: size.width/3, vertical: size.height/12) : EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
     final EdgeInsets effectivePadding = MediaQuery.of(context).viewInsets + (insetPadding ?? const EdgeInsets.all(0.0));
     return AnimatedPadding(
       padding: effectivePadding,
