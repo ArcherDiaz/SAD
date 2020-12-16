@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
@@ -425,14 +426,36 @@ class ImageView extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 class CustomCarousel extends StatefulWidget {
-  final Color circleColor;
+  final bool showPageIndicator;
+  final Color indicatorColor;
+  final int secondsToSwap;
   final double aspectRatio;
+  final double viewportFraction;
+
   final List<Widget> children;
+
+  final int childrenLength;
+  final Widget Function(BuildContext context, int index, void Function() previous, void Function() next) childrenBuilder;
+
   CustomCarousel({Key key,
-    this.circleColor = Colors.white,
+    this.showPageIndicator = true,
+    this.indicatorColor = Colors.white,
+    this.secondsToSwap = 5,
     this.aspectRatio = 2.0,
+    this.viewportFraction = 1.0,
     @required this.children,
-  }) : super(key: key);
+  }) : this.childrenLength = children.length,  this.childrenBuilder = null, super(key: key);
+
+  CustomCarousel.builder({Key key,
+    this.showPageIndicator = true,
+    this.indicatorColor = Colors.white,
+    this.secondsToSwap = 5,
+    this.aspectRatio = 2.0,
+    this.viewportFraction = 1.0,
+    @required this.childrenLength,
+    @required this.childrenBuilder,
+  }) : this.children = null, super(key: key);
+
   @override
   _CustomCarouselState createState() => _CustomCarouselState();
 }
@@ -443,11 +466,15 @@ class _CustomCarouselState extends State<CustomCarousel> {
   double _counter;
   int _index;
 
+  _CustomCarouselState(){
+    _pageController = PageController(initialPage: _index == null ? 0 : _index, viewportFraction: widget.viewportFraction,);
+  }
+
   @override
   void initState() {
     _index = 0;
     _counter = 0;
-    _pageController = PageController(initialPage: _index);
+    _pageController = PageController(initialPage: _index, viewportFraction: widget.viewportFraction,);
     super.initState();
     _timer();
   }
@@ -469,7 +496,10 @@ class _CustomCarouselState extends State<CustomCarousel> {
             controller: _pageController,
             pageSnapping: true,
             scrollDirection: Axis.horizontal,
-            children: widget.children,
+            children: widget.children == null ? [
+              for(int i = 0; i < widget.childrenLength; i++)
+                widget.childrenBuilder(context, i, previous, next,),
+            ] : widget.children,
             onPageChanged: (i){
               setState(() {
                 _index = i;
@@ -477,42 +507,56 @@ class _CustomCarouselState extends State<CustomCarousel> {
               });
             },
           ),
-          Container(
-            margin: EdgeInsets.only(top: 10.0,),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3,),
-              borderRadius: BorderRadius.circular(45.0,),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for(int i = 0; i < widget.children.length; i++)
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
-                    child: Icon(Icons.brightness_1_sharp,
-                      size: 5.0,
-                      color: i == _index ? widget.circleColor : Colors.grey,
+          if(widget.showPageIndicator == true)
+            Padding(
+              padding: EdgeInsets.all(10.0,),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for(int i = 0; i < widget.childrenLength; i++)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
+                      child: Icon(Icons.brightness_1_sharp,
+                        size: 5.0,
+                        color: i == _index ? widget.indicatorColor : Colors.grey,
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  void _timer(){
-    if(_counter >= 5){
-      _index = _index + 1;
-      if(_index >= widget.children.length){
-        _index = 0;
-      }
-      _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+  void next(){
+    _counter = 0;
+    _index = _index + 1;
+    if(_index >= widget.childrenLength){
+      _index = 0;
     }
-    Future.delayed(Duration(seconds: 1)).then((useless){
+    _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+  }
+
+  void previous(){
+    _counter = 0;
+    _index = _index - 1;
+    if(_index < 0){
+      _index = widget.childrenLength;
+    }
+    _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+  }
+
+  void _timer(){
+    Timer.periodic(Duration(seconds: 1,), (timer) {
       _counter = _counter + 1;
-      _timer();
+      if(_counter >= widget.secondsToSwap){
+        _index = _index + 1;
+        if(_index >= widget.childrenLength){
+          _index = 0;
+        }
+        _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+      }
     });
   }
 
