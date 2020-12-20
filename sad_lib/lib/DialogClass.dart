@@ -764,20 +764,22 @@ class CustomDialog extends StatelessWidget {
         removeRight: true,
         removeBottom: true,
         context: context,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-              maxWidth: (size.width > 700) ? size.width/3 : size.width,
-              minWidth: size.width/4,
-              maxHeight: (size.width > 700) ? size.height/1.2 : size.height,
-              minHeight: size.width/15,
-          ),
-          child: Material(
-            color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
-            elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
-            shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
-            type: MaterialType.card,
-            clipBehavior: clipBehavior,
-            child: child,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+                maxWidth: (size.width > 700) ? size.width/3 : size.width,
+                minWidth: size.width/4,
+                maxHeight: (size.width > 700) ? size.height/1.2 : size.height,
+                minHeight: size.width/15,
+            ),
+            child: Material(
+              color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
+              elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
+              shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
+              type: MaterialType.card,
+              clipBehavior: clipBehavior,
+              child: child,
+            ),
           ),
         ),
       ),
