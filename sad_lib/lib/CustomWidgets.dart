@@ -319,15 +319,10 @@ class ImageView extends StatelessWidget {
   final ContainsImageCallBack containsImage;
 
   final Widget errorView;
-  final CustomLoader customLoader;
+  final Widget customLoader;
 
   ImageView.custom({Key key,
-    @required this.imageKey,
-
     @required this.getCustomImage,
-    @required this.getImage,
-    @required this.addImage,
-    @required this.containsImage,
 
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
     this.margin = EdgeInsets.zero,
@@ -338,7 +333,10 @@ class ImageView extends StatelessWidget {
 
     @required this.customLoader,
     this.errorView,
-  }) : this.imageType = ImageType.custom, this.imageFuture = getCustomImage.call(), super(key: key);
+  }) : this.imageType = ImageType.custom,
+        this.imageFuture = getCustomImage.call(), this.imageKey = null,
+        this.containsImage = null, this.addImage = null, this.getImage = null,
+      super(key: key);
 
   ImageView.network({Key key,
     @required this.imageKey,
@@ -551,7 +549,9 @@ class _CustomCarouselState extends State<CustomCarousel> {
         if(_index >= widget.childrenLength){
           _index = 0;
         }
-        _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+        if(widget.childrenLength > 0) {
+          _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+        }
       }
     });
   }

@@ -752,7 +752,7 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final DialogTheme dialogTheme = DialogTheme.of(context);
-    final EdgeInsets insetPadding = (size.width > 700) ? EdgeInsets.symmetric(horizontal: size.width/3, vertical: size.height/12) : EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
+    final EdgeInsets insetPadding = EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
     final EdgeInsets effectivePadding = MediaQuery.of(context).viewInsets + (insetPadding ?? const EdgeInsets.all(0.0));
     return AnimatedPadding(
       padding: effectivePadding,
@@ -764,13 +764,21 @@ class CustomDialog extends StatelessWidget {
         removeRight: true,
         removeBottom: true,
         context: context,
-        child: Material(
-          color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
-          elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
-          shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
-          type: MaterialType.card,
-          clipBehavior: clipBehavior,
-          child: child,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+              maxWidth: (size.width > 700) ? size.width/3 : size.width,
+              minWidth: size.width/4,
+              maxHeight: (size.width > 700) ? size.height/1.2 : size.height,
+              minHeight: size.width/15,
+          ),
+          child: Material(
+            color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
+            elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
+            shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
+            type: MaterialType.card,
+            clipBehavior: clipBehavior,
+            child: child,
+          ),
         ),
       ),
     );
