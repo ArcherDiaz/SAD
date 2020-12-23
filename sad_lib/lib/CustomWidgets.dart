@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-class TextView extends StatefulWidget {
+class TextView extends StatelessWidget {
   final bool isSelectable;
   final EdgeInsets padding;
   final String text;
@@ -14,9 +14,10 @@ class TextView extends StatefulWidget {
   final FontStyle fontStyle;
   final double letterSpacing;
   final int maxLines;
+  final List<Shadow> shadows;
 
   TextView({Key key,
-    this.isSelectable = false,
+    this.isSelectable = true,
     this.padding = EdgeInsets.zero,
     @required this.text,
     this.align = TextAlign.left,
@@ -26,10 +27,11 @@ class TextView extends StatefulWidget {
     this.fontStyle = FontStyle.normal,
     this.letterSpacing = 0.75,
     this.maxLines,
+    this.shadows,
   }) : this.textSpan = null, super(key: key);
 
   TextView.rich({Key key,
-    this.isSelectable = false,
+    this.isSelectable = true,
     this.align = TextAlign.left,
     this.padding = EdgeInsets.zero,
     @required this.textSpan,
@@ -39,41 +41,37 @@ class TextView extends StatefulWidget {
         this.fontWeight = null,
         this.fontStyle = null,
         this.letterSpacing = null,
-        this.maxLines = null, super(key: key);
-
-  @override
-  _TextViewState createState() => _TextViewState();
-}
-
-class _TextViewState extends State<TextView> {
+        this.maxLines = null,
+        this.shadows = null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: widget.padding,
-        child: widget.isSelectable != true ? _normal()
-        : _selectable(),
-      );
+      padding: padding,
+      child: isSelectable != true ? _normal()
+          : _selectable(),
+    );
   }
 
   Widget _normal(){
-    if(widget.text != null){
-      return Text(widget.text,
-        maxLines: widget.maxLines,
-        textAlign: widget.align,
+    if(text != null){
+      return Text(text,
+        overflow: TextOverflow.ellipsis,
+        maxLines: maxLines,
+        textAlign: align,
         style: TextStyle(
-          fontSize: widget.size,
-          letterSpacing: widget.letterSpacing,
-          fontWeight: widget.fontWeight,
-          fontStyle: widget.fontStyle,
-          color: widget.color,
+          fontSize: size,
+          letterSpacing: letterSpacing,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
+          shadows: shadows,
         ),
       );
     }else{
       return Text.rich(
-        TextSpan(
-          children: <InlineSpan>[
-            for(var textView in widget.textSpan)
+        TextSpan(children: <InlineSpan>[
+            for(var textView in textSpan)
               TextSpan(text: textView.text,
                 style: TextStyle(
                   fontSize: textView.size,
@@ -81,51 +79,53 @@ class _TextViewState extends State<TextView> {
                   fontWeight: textView.fontWeight,
                   fontStyle: textView.fontStyle,
                   color: textView.color,
+                  shadows: shadows,
                 ),
               ),
-          ],
-        ),
-        maxLines: widget.maxLines,
-        textAlign: widget.align,
+        ],),
+        overflow: TextOverflow.ellipsis,
+        maxLines: maxLines,
+        textAlign: align,
       );
     }
   }
 
   Widget _selectable(){
-    if(widget.text != null){
-      return SelectableText(widget.text,
+    if(text != null){
+      return SelectableText(text,
         showCursor: true,
         autofocus: false,
-        maxLines: widget.maxLines,
-        textAlign: widget.align,
+        maxLines: maxLines,
+        textAlign: align,
         toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
         style: TextStyle(
-          fontSize: widget.size,
-          letterSpacing: widget.letterSpacing,
-          fontWeight: widget.fontWeight,
-          fontStyle: widget.fontStyle,
-          color: widget.color,
+          fontSize: size,
+          letterSpacing: letterSpacing,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
+          shadows: shadows,
         ),
       );
     }else{
       return SelectableText.rich(
-        TextSpan(
-          children: <InlineSpan>[
-            for(var textView in widget.textSpan)
-              TextSpan(text: textView.text,
-                style: TextStyle(
-                  fontSize: textView.size,
-                  letterSpacing: textView.letterSpacing,
-                  fontWeight: textView.fontWeight,
-                  fontStyle: textView.fontStyle,
-                  color: textView.color,
-                ),
+        TextSpan(children: <InlineSpan>[
+          for(var textView in textSpan)
+            TextSpan(text: textView.text,
+              style: TextStyle(
+                fontSize: textView.size,
+                letterSpacing: textView.letterSpacing,
+                fontWeight: textView.fontWeight,
+                fontStyle: textView.fontStyle,
+                color: textView.color,
+                shadows: shadows,
               ),
-          ],
-        ),
+            ),
+        ],),
         showCursor: true,
-        maxLines: widget.maxLines,
-        textAlign: widget.align,
+        autofocus: false,
+        maxLines: maxLines,
+        textAlign: align,
         toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
       );
     }
@@ -141,8 +141,6 @@ enum Width {fit, stretch}
 ///fit = make button be normal size to fit content
 ///stretch = make button be stretch to fit screen width
 enum Direction {vertical, horizontal}
-///fit = make button be normal size to fit content
-///stretch = make button be stretch to fit screen width
 class ButtonView extends StatelessWidget {
 
   final EdgeInsets margin;
@@ -297,10 +295,6 @@ class CustomLoader extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 enum ImageType {network, custom}
-typedef GetImageCallBack = Uint8List Function(String key); ///This function requires an image, that belongs to the given key
-typedef AddImageCallBack = void Function(String key, Uint8List iamge); ///This function provides the key/url and image to the user to store or utilize
-typedef ContainsImageCallBack = bool Function(String key); ///This function provides a key to the user tp check their image Map already contains a specific image
-
 class ImageView extends StatelessWidget {
 
   final ColorFilter colorFilter;
@@ -314,9 +308,6 @@ class ImageView extends StatelessWidget {
   final ImageType imageType;
 
   final Future<Uint8List> imageFuture; final Future<Uint8List> Function() getCustomImage;
-  final GetImageCallBack getImage;
-  final AddImageCallBack addImage;
-  final ContainsImageCallBack containsImage;
 
   final Widget errorView;
   final Widget customLoader;
@@ -335,15 +326,10 @@ class ImageView extends StatelessWidget {
     this.errorView,
   }) : this.imageType = ImageType.custom,
         this.imageFuture = getCustomImage.call(), this.imageKey = null,
-        this.containsImage = null, this.addImage = null, this.getImage = null,
       super(key: key);
 
   ImageView.network({Key key,
     @required this.imageKey,
-
-    this.getImage,
-    this.addImage,
-    this.containsImage,
 
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
     this.margin = EdgeInsets.zero,
@@ -557,6 +543,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
   }
 
 }
+
 
 
 //------------------------------------------------------------------------------

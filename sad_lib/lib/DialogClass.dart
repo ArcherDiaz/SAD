@@ -203,7 +203,7 @@ class DialogClass {
                 child: Container(color: Colors.transparent,),
               ),
             ),
-            Dialog(
+            CustomDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.5)),
               backgroundColor: background,
               child: SingleChildScrollView(
@@ -521,20 +521,20 @@ class DialogClass {
                 ),
               ),
               Image.memory(media, fit: BoxFit.contain,),
-              Align(
+              ButtonView(
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
                 alignment: Alignment.topRight,
-                child: Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(90.0)),
-                  color: background,
-                  child: IconButton(
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(Icons.close, size: 30.0, color: buttonColor,),
-                    splashColor: buttonColor,
+                borderRadius: 90.0,
+                color: background,
+                padding: EdgeInsets.all(3.0,),
+                children: [
+                  Icon(Icons.close,
+                    size: 30.0,
+                    color: buttonColor,
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -639,7 +639,7 @@ class DialogClass {
               child: Container(color: Colors.transparent,),
             ),
           ),
-          Dialog(
+          CustomDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.5)),
             backgroundColor: background,
             child: ListView.builder(
