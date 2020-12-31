@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class TextView extends StatelessWidget {
   final bool isSelectable;
@@ -17,7 +18,7 @@ class TextView extends StatelessWidget {
   final List<Shadow> shadows;
 
   TextView({Key key,
-    this.isSelectable = false,
+    this.isSelectable = true,
     this.padding = EdgeInsets.zero,
     @required this.text,
     this.align = TextAlign.left,
@@ -31,7 +32,7 @@ class TextView extends StatelessWidget {
   }) : this.textSpan = null, super(key: key);
 
   TextView.rich({Key key,
-    this.isSelectable = false,
+    this.isSelectable = true,
     this.align = TextAlign.left,
     this.padding = EdgeInsets.zero,
     @required this.textSpan,
@@ -48,7 +49,7 @@ class TextView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-      child: isSelectable != true ? _normal()
+      child: isSelectable == false ? _normal()
           : _selectable(),
     );
   }
@@ -93,7 +94,8 @@ class TextView extends StatelessWidget {
   Widget _selectable(){
     if(text != null){
       return SelectableText(text,
-        showCursor: true,
+        showCursor: false,
+        onTap: null,
         autofocus: false,
         maxLines: maxLines,
         textAlign: align,
@@ -122,7 +124,8 @@ class TextView extends StatelessWidget {
               ),
             ),
         ],),
-        showCursor: true,
+        showCursor: false,
+        onTap: null,
         autofocus: false,
         maxLines: maxLines,
         textAlign: align,
@@ -195,7 +198,7 @@ class ButtonView extends StatelessWidget {
         splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
         child: width == Width.fit ? Container(
           padding: padding,
-          decoration: borderRadius == 0.0 ? BoxDecoration(
+          decoration: (borderRadius == null || borderRadius == 0.0) ? BoxDecoration(
             color: color,
             gradient: gradient,
             border: border,
@@ -322,7 +325,7 @@ class ImageView extends StatelessWidget {
     this.maxSize = double.infinity,
     this.fit = BoxFit.cover,
 
-    @required this.customLoader,
+    this.customLoader,
     this.errorView,
   }) : this.imageType = ImageType.custom,
         this.imageFuture = getCustomImage.call(), this.imageKey = null,
@@ -338,7 +341,7 @@ class ImageView extends StatelessWidget {
 
     this.maxSize = double.infinity,
     this.fit = BoxFit.cover,
-    @required this.customLoader,
+    this.customLoader,
 
     this.errorView,
   }) : this.imageFuture = null, this.getCustomImage = null, this.imageType = ImageType.network, super(key: key);
@@ -367,7 +370,11 @@ class ImageView extends StatelessWidget {
         if(chunk == null){
           return widget;
         }else {
-          return customLoader;
+          if(customLoader == null){
+            return Container();
+          }else{
+            return customLoader;
+          }
         }
       },
       errorBuilder: (context, object, stackTrace){
@@ -419,7 +426,7 @@ class CustomCarousel extends StatefulWidget {
   final List<Widget> children;
 
   final int childrenLength;
-  final Widget Function(BuildContext context, int index, void Function() previous, void Function() next) childrenBuilder;
+  final Widget Function(BuildContext context, int index, bool isCurrentSlide, void Function() previous, void Function() next) childrenBuilder;
 
   CustomCarousel({Key key,
     this.showPageIndicator = true,
@@ -478,7 +485,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
             scrollDirection: Axis.horizontal,
             children: widget.children == null ? [
               for(int i = 0; i < widget.childrenLength; i++)
-                widget.childrenBuilder(context, i, previous, next,),
+                widget.childrenBuilder(context, i, i == _index, previous, next,),
             ] : widget.children,
             onPageChanged: (i){
               setState(() {
@@ -542,6 +549,104 @@ class _CustomCarouselState extends State<CustomCarousel> {
     });
   }
 
+}
+
+
+
+//------------------------------------------------------------------------------
+
+class HoverWidget extends StatefulWidget {
+  final ContainerChanges Function() onHover;
+  final ContainerChanges Function() idle;
+  final Widget Function(bool isHovering) builder;
+
+  final Duration duration;
+  final Curve curve;
+  final double width;
+  final double height;
+  final Widget child;
+  HoverWidget({Key key,
+    this.idle,
+    this.onHover,
+    this.builder,
+    this.duration = const Duration(seconds: 1),
+    this.curve = Curves.linear,
+    this.width,
+    this.height,
+    this.child,
+  }) : super(key: key);
+  @override
+  _HoverWidgetState createState() => _HoverWidgetState();
+}
+
+class _HoverWidgetState extends State<HoverWidget> {
+
+  ContainerChanges _container;
+  ContainerChanges _changes;
+  bool _isHovering;
+
+  @override
+  void initState() {
+    _container = widget.idle();
+    _changes = ContainerChanges.nullValue();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _container = widget.idle();
+    return AnimatedContainer(
+      duration: widget.duration,
+      curve: widget.curve,
+      width: widget.width,
+      height: widget.height,
+      alignment: _changes.alignment == null ? _container.alignment : _changes.alignment,
+      padding: _changes.padding == null ? _container.padding : _changes.padding,
+      margin: _changes.margin == null ? _container.margin : _changes.margin,
+      decoration: _changes.decoration == null ? _container.decoration : _changes.decoration,
+      child: InkWell(
+        onTap: (){
+
+        },
+        onHover: (flag){
+          if(flag == true){ ///if mouse is currently over widget
+            setState(() {
+              _changes = widget.onHover();
+              _isHovering = true;
+            });
+          }else{
+            setState(() {
+              _changes = ContainerChanges.nullValue();
+              _isHovering = false;
+            });
+          }
+        },
+        mouseCursor: MouseCursor.defer,
+        child: widget.child == null ? widget.builder(_isHovering,) : widget.child,
+      ),
+    );
+  }
+
+}
+
+class ContainerChanges{
+  final AlignmentGeometry alignment;
+  final EdgeInsets margin;
+  final EdgeInsets padding;
+  final Decoration decoration;
+
+  ContainerChanges({
+    this.alignment = Alignment.center,
+    this.margin,
+    this.padding,
+    this.decoration = const BoxDecoration(),
+  });
+
+  ContainerChanges.nullValue() :
+        this.alignment = null,
+        this.margin = null,
+        this.padding = null,
+        this.decoration = null;
 }
 
 
