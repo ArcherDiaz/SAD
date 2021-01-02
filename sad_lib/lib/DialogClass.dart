@@ -222,7 +222,7 @@ class DialogClass {
                         scrollPadding: EdgeInsets.symmetric(horizontal: 10.0),
                         textAlign: TextAlign.center,
                         toolbarOptions: ToolbarOptions(paste: true, selectAll: true, copy: true, cut: true),
-                        style: TextStyle(fontSize: 17.5),
+                        style: TextStyle(color: textColor, fontSize: 17.5),
                         onChanged: (text) {
                           filename = text;
                         },
@@ -289,8 +289,7 @@ class DialogClass {
             )
           ],
         );
-    },
-    );
+    },);
   }
 
 
@@ -311,7 +310,7 @@ class DialogClass {
               child: Container(color: Colors.transparent,),
             ),
           ),
-          Dialog(
+          CustomDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.5)),
             backgroundColor: background,
             child: SingleChildScrollView(
@@ -332,7 +331,7 @@ class DialogClass {
                     scrollPadding: EdgeInsets.symmetric(vertical: 10.0),
                     textAlign: TextAlign.start,
                     toolbarOptions: ToolbarOptions(paste: true, selectAll: true, copy: true, cut: true),
-                    style: TextStyle(fontSize: 17.5,),
+                    style: TextStyle(color: textColor, fontSize: 17.5,),
                     onChanged: (text) {
                       input = text;
                     },
@@ -344,7 +343,7 @@ class DialogClass {
                     cursorColor: buttonColor,
                     decoration: InputDecoration(
                       labelText: title,
-                      labelStyle: TextStyle(color: textColor),
+                      labelStyle: TextStyle(color: textColor,),
                       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: buttonColor)),
                       contentPadding: EdgeInsets.all(10.0),
                     ),
