@@ -18,7 +18,7 @@ class TextView extends StatelessWidget {
   final List<Shadow> shadows;
 
   TextView({Key key,
-    this.isSelectable = true,
+    this.isSelectable = false,
     this.padding = EdgeInsets.zero,
     @required this.text,
     this.align = TextAlign.left,
@@ -32,7 +32,7 @@ class TextView extends StatelessWidget {
   }) : this.textSpan = null, super(key: key);
 
   TextView.rich({Key key,
-    this.isSelectable = true,
+    this.isSelectable = false,
     this.align = TextAlign.left,
     this.padding = EdgeInsets.zero,
     @required this.textSpan,
