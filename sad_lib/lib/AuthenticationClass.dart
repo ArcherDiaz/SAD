@@ -4,6 +4,7 @@ class AuthenticationClass{
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   AuthenticationClass({bool checkUser = false}){
+    _auth.setPersistence(Persistence.LOCAL,);
     if(checkUser == true){
       if(_auth.currentUser == null){
         _auth.signInAnonymously().then((credential){

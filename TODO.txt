@@ -8,3 +8,4 @@ Custom Widgets:
 
 Dialogs:
 - dialogs need a header paramater of type widget
+- media dialog can take ImageView as an optional parameter
