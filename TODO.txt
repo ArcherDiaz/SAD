@@ -2,10 +2,8 @@ Custom Widgets:
 - ButtonView widget needs a splash color(currently only works on white)
 - ButtonView widget needs a hover color
 - TextView widget needs an onPressed callback function
-- TextView widget textoverflow problem
 - ImageView.network widget need automatic aspect ratio
 - Carousel widget needs endless scrolling
 
 Dialogs:
 - dialogs need a header paramater of type widget
-- media dialog can take ImageView as an optional parameter

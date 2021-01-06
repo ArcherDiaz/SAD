@@ -503,7 +503,7 @@ class DialogClass {
 
 
   ///view media dialog
-  Future<void> showMediaDialog(BuildContext context, Uint8List media) {
+  Future<void> showMediaDialog(BuildContext context, {Uint8List media, ImageView imageView,}) {
     return showDialog(context: context, barrierDismissible: true, builder: (BuildContext context) {
         return Material(
           color: Colors.transparent,
@@ -519,7 +519,9 @@ class DialogClass {
                   child: Container(color: Colors.transparent,),
                 ),
               ),
-              Image.memory(media, fit: BoxFit.contain,),
+              media == null
+                  ? imageView
+                  : Image.memory(media, fit: BoxFit.contain,),
               ButtonView(
                 onPressed: (){
                   Navigator.of(context).pop();

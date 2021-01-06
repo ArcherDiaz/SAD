@@ -4,7 +4,11 @@ class AuthenticationClass{
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   AuthenticationClass({bool checkUser = false}){
-    _auth.setPersistence(Persistence.LOCAL,);
+    _auth.setPersistence(Persistence.LOCAL,).then((value){
+      print("Authentication Class | Persistence is now LOCAL");
+    }).catchError((onError){
+      print("Authentication Class | Persistence ERROR: ${onError.toString()}");
+    });
     if(checkUser == true){
       if(_auth.currentUser == null){
         _auth.signInAnonymously().then((credential){
@@ -24,11 +28,15 @@ class AuthenticationClass{
     }
   }
 
-  bool activeUser(){
-    if(_auth.currentUser == null || _auth.currentUser.isAnonymous == true){
+  bool hasActiveUser(){
+    if(_auth.currentUser == null){
       return false;
     }else{
-      return true;
+      if(_auth.currentUser.isAnonymous == true){
+        return false;
+      }else{
+        return true;
+      }
     }
   }
 
