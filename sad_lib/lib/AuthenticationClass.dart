@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthenticationClass{
 
@@ -10,23 +11,30 @@ class AuthenticationClass{
       print("Authentication Class | Persistence ERROR: ${onError.toString()}");
     });
     if(checkUser == true){
-      if(_auth.currentUser == null){
-        _auth.signInAnonymously().then((credential){
-          print("Authentication Class | SUCCESSFUL anonymous sign in");
-        }).catchError((onError){
-          print("Authentication Class | Anonymous Sign In: ${onError.toString()}");
-        });
-      }else{
-        if(_auth.currentUser.isAnonymous == false) {
-          _auth.currentUser.reload().then((useless) {
-            print("Authentication Class | SUCCESSFUL active user reload");
-          }).catchError((onError) {
-            print("Authentication Class | Reloading Current User: ${onError.toString()}");
-          });
-        }
-      }
+      checkUserState();
     }
   }
+
+  Future<void> checkUserState() async {
+    if(_auth.currentUser == null){
+      await _auth.signInAnonymously().then((credential){
+        print("Authentication Class | SUCCESSFUL anonymous sign in");
+      }).catchError((onError){
+        print("Authentication Class | Anonymous Sign In: ${onError.toString()}");
+      });
+      return;
+    }else{
+      if(_auth.currentUser.isAnonymous == false) {
+        await _auth.currentUser.reload().then((useless) {
+          print("Authentication Class | SUCCESSFUL active user reload");
+        }).catchError((onError) {
+          print("Authentication Class | Reloading Current User: ${onError.toString()}");
+        });
+      }
+      return;
+    }
+  }
+
 
   bool hasActiveUser(){
     if(_auth.currentUser == null){
@@ -61,6 +69,7 @@ class AuthenticationClass{
       }
     }
   }
+
 
   Future<AuthResult> logInUser(String email, String password){
     return _auth.signInWithEmailAndPassword(email: email, password: password).then((credential){
@@ -149,9 +158,9 @@ class AuthResult{
   UserInfo info;
 
   AuthResult({
-    this.successState,
-    this.message,
-    this.info,
+    @required this.successState,
+    @required this.message,
+    @required this.info,
   });
 
 }
@@ -167,13 +176,13 @@ class UserInfo{
   DateTime lastSignedIn;
 
   UserInfo({
-    this.uid,
-    this.email,
-    this.verificationStatus,
-    this.photoURL,
-    this.userName,
-    this.creationDate,
-    this.lastSignedIn,
+    @required this.uid,
+    @required this.email,
+    @required this.verificationStatus,
+    @required this.photoURL,
+    @required this.userName,
+    @required this.creationDate,
+    @required this.lastSignedIn,
   });
 
 }

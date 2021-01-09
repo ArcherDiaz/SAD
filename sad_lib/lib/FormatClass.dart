@@ -144,19 +144,23 @@ class FormatClass{
   }
 
   String formatMoney(double num){
-    String a = "$num";
+    String full = "$num";
+    if(full.contains(".") == false){
+      full = "$full.00";
+    }
+    String b = full.substring(0, full.indexOf("."));
     String upper = "";
-    String b = a.contains(".") ? a.substring(0, a.indexOf(".")) : a;
-    for(int i = (b.length-1); i >=0; i--){
+    for(int i = (b.length-1); i >= 0; i--){
       if((i%3) == 0 && (b.length - i) > 3){
         upper = b[i] + "," + upper;
       }else{
         upper = b[i] + upper;
       }
     }
-    String lower = a.substring(a.indexOf("."));
+    String lower = full.substring(full.indexOf("."));
     lower = lower.padRight(3, "0");
-    if(lower.length > 3){lower = lower.substring(0, 3);}
+    if(lower.length > 3){ lower = lower.substring(0, 3); }
+
     return "\$$upper$lower";
   }
 

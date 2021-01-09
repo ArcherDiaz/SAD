@@ -325,7 +325,7 @@ class ImageView extends StatelessWidget {
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio = 1.0,
-    this.maxSize = double.infinity,
+    this.maxSize,
     this.fit = BoxFit.cover,
 
     this.customLoader,
@@ -342,7 +342,7 @@ class ImageView extends StatelessWidget {
     this.radius = 0.0,
     this.aspectRatio = 1.0,
 
-    this.maxSize = double.infinity,
+    this.maxSize,
     this.fit = BoxFit.cover,
     this.customLoader,
 
@@ -367,7 +367,7 @@ class ImageView extends StatelessWidget {
   Widget _networkImage(){
     return Image.network(imageKey,
       width: maxSize,
-      height: maxSize/aspectRatio,
+      height: maxSize == null ? null : maxSize/aspectRatio,
       fit: fit,
       loadingBuilder: (context, widget, chunk){
         if(chunk == null){
@@ -382,7 +382,7 @@ class ImageView extends StatelessWidget {
       },
       errorBuilder: (context, object, stackTrace){
         if(errorView == null){
-          return TextView(text: "Unable to load image..",);
+          return TextView(text: "Unable to load image..", size: 15.0,);
         }else{
           return errorView;
         }
@@ -396,9 +396,13 @@ class ImageView extends StatelessWidget {
       builder: (context, snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           if(snapshot.hasData && snapshot.data != null){
-            return Image.memory(snapshot.data, width: maxSize, height: maxSize/aspectRatio, fit: fit,);
+            return RawImage(image: snapshot.data,
+              width: maxSize,
+              height: maxSize == null ? null : maxSize/aspectRatio,
+              fit: fit,
+            );
           }else{
-            return errorView == null ? TextView(text: "Unable to load image..",)
+            return errorView == null ? TextView(text: "Unable to load image..", size: 15.0,)
                 : errorView;
           }
         }else{
@@ -462,9 +466,9 @@ class _CustomCarouselState extends State<CustomCarousel> {
 
   @override
   void initState() {
+    _pageController = PageController(initialPage: _index, viewportFraction: widget.viewportFraction,);
     _index = 0;
     _counter = 0;
-    _pageController = PageController(initialPage: _index, viewportFraction: widget.viewportFraction,);
     super.initState();
     _timer();
   }
@@ -545,7 +549,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
         if(_index >= widget.childrenLength){
           _index = 0;
         }
-        if(widget.childrenLength > 0) {
+        if(widget.childrenLength != null && widget.childrenLength > 0) {
           _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
         }
       }
