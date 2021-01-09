@@ -550,7 +550,9 @@ class _CustomCarouselState extends State<CustomCarousel> {
           _index = 0;
         }
         if(widget.childrenLength != null && widget.childrenLength > 0) {
-          _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+          if(_pageController.hasClients) {
+            _pageController.animateToPage(_index, duration: Duration(milliseconds: 500), curve: Curves.ease,);
+          }
         }
       }
     });
