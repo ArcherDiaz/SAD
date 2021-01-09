@@ -466,9 +466,9 @@ class _CustomCarouselState extends State<CustomCarousel> {
 
   @override
   void initState() {
-    _pageController = PageController(initialPage: _index, viewportFraction: widget.viewportFraction,);
     _index = 0;
     _counter = 0;
+    _pageController = PageController(initialPage: _index, viewportFraction: widget.viewportFraction,);
     super.initState();
     _timer();
   }
