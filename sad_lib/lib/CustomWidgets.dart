@@ -224,19 +224,54 @@ class _ButtonViewState extends State<ButtonView> {
   @override
   Widget build(BuildContext context) {
     if(widget.alignment == null){
-      return _animatedContainer();
+      return widget.curve == null ? _noHover() : _withHover();
     }else {
       return Align(
         alignment: widget.alignment,
-        child: _animatedContainer(),
+        child: widget.curve == null ? _noHover() : _withHover(),
       );
     }
   }
 
-  Widget _animatedContainer(){
+  Widget _withHover(){
     return AnimatedContainer(
       duration: widget.duration,
       curve: widget.curve,
+      width: widget.width == Width.fit ? null : double.infinity,
+      padding: _changes.padding == null ? widget.padding : _changes.padding,
+      margin: _changes.margin == null ? widget.margin : _changes.margin,
+      decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
+      child: InkWell(
+        onTap: (){
+          widget.onPressed.call();
+        },
+        onHover: (flag){
+          if(flag == true){ ///if mouse is currently over widget
+            setState(() {
+              _changes = widget.onHover;
+              _isHovering = true;
+            });
+          }else{
+            setState(() {
+              _changes = ContainerChanges.nullValue();
+              _isHovering = false;
+            });
+          }
+        },
+        hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+        splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        child: widget.builder == null
+            ? widget.children == null
+                ? widget.child
+                : _contentView()
+            : widget.builder(_isHovering),
+      ),
+    );
+  }
+
+  Widget _noHover(){
+    return Container(
       width: widget.width == Width.fit ? null : double.infinity,
       padding: _changes.padding == null ? widget.padding : _changes.padding,
       margin: _changes.margin == null ? widget.margin : _changes.margin,
