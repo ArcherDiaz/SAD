@@ -224,11 +224,11 @@ class _ButtonViewState extends State<ButtonView> {
   @override
   Widget build(BuildContext context) {
     if(widget.alignment == null){
-      return widget.curve == null ? _noHover() : _withHover();
+      return (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover();
     }else {
       return Align(
         alignment: widget.alignment,
-        child: widget.curve == null ? _noHover() : _withHover(),
+        child: (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover(),
       );
     }
   }
@@ -241,32 +241,7 @@ class _ButtonViewState extends State<ButtonView> {
       padding: _changes.padding == null ? widget.padding : _changes.padding,
       margin: _changes.margin == null ? widget.margin : _changes.margin,
       decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: InkWell(
-        onTap: (){
-          widget.onPressed.call();
-        },
-        onHover: (flag){
-          if(flag == true){ ///if mouse is currently over widget
-            setState(() {
-              _changes = widget.onHover;
-              _isHovering = true;
-            });
-          }else{
-            setState(() {
-              _changes = ContainerChanges.nullValue();
-              _isHovering = false;
-            });
-          }
-        },
-        hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
-        splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        child: widget.builder == null
-            ? widget.children == null
-                ? widget.child
-                : _contentView()
-            : widget.builder(_isHovering),
-      ),
+      child: _inkWell(),
     );
   }
 
@@ -276,32 +251,38 @@ class _ButtonViewState extends State<ButtonView> {
       padding: _changes.padding == null ? widget.padding : _changes.padding,
       margin: _changes.margin == null ? widget.margin : _changes.margin,
       decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: InkWell(
-        onTap: (){
-          widget.onPressed.call();
-        },
-        onHover: (flag){
-          if(flag == true){ ///if mouse is currently over widget
-            setState(() {
+      child: _inkWell(),
+    );
+  }
+
+  Widget _inkWell(){
+    return InkWell(
+      onTap: (){
+        widget.onPressed.call();
+      },
+      onHover: (flag){
+        if(flag == true){ ///if mouse is currently over widget
+          setState(() {
+            if(widget.onHover != null) {
               _changes = widget.onHover;
-              _isHovering = true;
-            });
-          }else{
-            setState(() {
-              _changes = ContainerChanges.nullValue();
-              _isHovering = false;
-            });
-          }
-        },
-        hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
-        splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        child: widget.builder == null
-            ? widget.children == null
-                ? widget.child
-                : _contentView()
-            : widget.builder(_isHovering),
-      ),
+            }
+            _isHovering = true;
+          });
+        }else{
+          setState(() {
+            _changes = ContainerChanges.nullValue();
+            _isHovering = false;
+          });
+        }
+      },
+      hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+      splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+      child: widget.builder == null
+          ? widget.children == null
+          ? widget.child
+          : _contentView()
+          : widget.builder(_isHovering),
     );
   }
 
