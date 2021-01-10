@@ -147,10 +147,10 @@ enum Width {fit, stretch}
 ///fit = make button be normal size to fit content
 ///stretch = make button be stretch to fit screen width
 enum Direction {vertical, horizontal}
-class ButtonView extends StatelessWidget {
+class ButtonView extends StatefulWidget {
 
-  final EdgeInsets margin;
   final Alignment alignment;
+  final EdgeInsets margin;
   final Width width;
   final Direction direction;
   final void Function() onPressed;
@@ -160,7 +160,13 @@ class ButtonView extends StatelessWidget {
   final Border border;
   final EdgeInsets padding;
   final List<BoxShadow> boxShadow;
+  final Widget child;
   final List<Widget> children;
+
+  final ContainerChanges onHover;
+  final Widget Function(bool isHovering) builder;
+  final Duration duration;
+  final Curve curve;
 
   ButtonView({Key key,
     this.alignment,
@@ -174,77 +180,120 @@ class ButtonView extends StatelessWidget {
     this.boxShadow,
     this.border = const Border(),
     this.borderRadius = 7.5,
-    @required this.children,
+    this.child,
+    this.children,
+  }) : duration = null, curve = null, onHover = null, builder = null, super(key: key);
+
+  ButtonView.hover({Key key,
+    this.alignment,
+    this.width = Width.fit,
+    this.direction = Direction.horizontal,
+    this.margin = EdgeInsets.zero,
+    this.padding = EdgeInsets.zero,
+    @required this.onPressed,
+    this.color = Colors.transparent,
+    this.gradient,
+    this.boxShadow,
+    this.border = const Border(),
+    this.borderRadius = 7.5,
+
+    this.child,
+    this.children,
+    this.builder,
+
+    @required this.onHover,
+    this.duration = const Duration(seconds: 1),
+    this.curve = Curves.linear,
   }) : super(key: key);
 
   @override
+  _ButtonViewState createState() => _ButtonViewState();
+}
+
+class _ButtonViewState extends State<ButtonView> {
+
+  ContainerChanges _changes;
+  bool _isHovering;
+
+  @override
+  void initState() {
+    _changes = ContainerChanges.nullValue();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if(alignment == null){
-      return _buttonView();
+    if(widget.alignment == null){
+      return _animatedContainer();
     }else {
       return Align(
-        alignment: alignment,
-        child: _buttonView(),
+        alignment: widget.alignment,
+        child: _animatedContainer(),
       );
     }
   }
 
-  Widget _buttonView(){
-    return Padding(
-      padding: margin,
+  Widget _animatedContainer(){
+    return AnimatedContainer(
+      duration: widget.duration,
+      curve: widget.curve,
+      width: widget.width == Width.fit ? null : double.infinity,
+      padding: _changes.padding == null ? widget.padding : _changes.padding,
+      margin: _changes.margin == null ? widget.margin : _changes.margin,
+      decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
       child: InkWell(
         onTap: (){
-          onPressed.call();
+          widget.onPressed.call();
         },
-        hoverColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        borderRadius: BorderRadius.circular(borderRadius),
-        splashColor: color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-        child: width == Width.fit ? Container(
-          padding: padding,
-          decoration: (borderRadius == null || borderRadius == 0.0) ? BoxDecoration(
-            color: color,
-            gradient: gradient,
-            border: border,
-            boxShadow: boxShadow == null ? [] : boxShadow,
-          ) : BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: gradient,
-            border: border,
-            boxShadow: boxShadow == null ? [] : boxShadow,
-          ),
-          child: _contentView(),
-        )
-            : Container(
-          padding: padding,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: gradient,
-            border: border,
-          ),
-          child: _contentView(),
-        ),
+        onHover: (flag){
+          if(flag == true){ ///if mouse is currently over widget
+            setState(() {
+              _changes = widget.onHover;
+              _isHovering = true;
+            });
+          }else{
+            setState(() {
+              _changes = ContainerChanges.nullValue();
+              _isHovering = false;
+            });
+          }
+        },
+        hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+        splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+        child: widget.builder == null
+            ? widget.children == null
+                ? widget.child
+                : _contentView()
+            : widget.builder(_isHovering),
       ),
     );
   }
 
+  BoxDecoration _decoration(){
+    return BoxDecoration(
+      color: widget.color,
+      borderRadius: (widget.borderRadius == null || widget.borderRadius == 0.0) ? null : BorderRadius.circular(widget.borderRadius),
+      gradient: widget.gradient,
+      border: widget.border,
+      boxShadow: widget.boxShadow == null ? [] : widget.boxShadow,
+    );
+  }
 
   Widget _contentView(){
-    if(direction == Direction.horizontal) {
+    if(widget.direction == Direction.horizontal) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: (widget.width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: children,
+        children: widget.children,
       );
     }else{
       return Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: (widget.width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: children,
+        children: widget.children,
       );
     }
   }
@@ -565,8 +614,8 @@ class _CustomCarouselState extends State<CustomCarousel> {
 //------------------------------------------------------------------------------
 
 class HoverWidget extends StatefulWidget {
-  final ContainerChanges Function() onHover;
-  final ContainerChanges Function() idle;
+  final ContainerChanges onHover;
+  final ContainerChanges idle;
   final Widget Function(bool isHovering) builder;
 
   final Duration duration;
@@ -596,14 +645,19 @@ class _HoverWidgetState extends State<HoverWidget> {
 
   @override
   void initState() {
-    _container = widget.idle();
+    _container = widget.idle;
     _changes = ContainerChanges.nullValue();
     super.initState();
   }
 
   @override
+  void didUpdateWidget(covariant HoverWidget oldWidget) {
+    _container = widget.idle;
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _container = widget.idle();
     return AnimatedContainer(
       duration: widget.duration,
       curve: widget.curve,
@@ -620,7 +674,7 @@ class _HoverWidgetState extends State<HoverWidget> {
         onHover: (flag){
           if(flag == true){ ///if mouse is currently over widget
             setState(() {
-              _changes = widget.onHover();
+              _changes = widget.onHover;
               _isHovering = true;
             });
           }else{
