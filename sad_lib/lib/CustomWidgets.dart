@@ -255,14 +255,14 @@ class _ButtonViewState extends State<ButtonView> {
         widget.onPressed.call();
       },
       onHover: (flag){
-        if(flag == true && _isHovering == false){ ///if mouse is currently over widget and [_isHovering] is not yet true
+        if(flag == true){ ///if mouse is currently over widget
           setState(() {
             if(widget.onHover != null) {
               _changes = widget.onHover;
             }
             _isHovering = true;
           });
-        }else if(flag == false && _isHovering == true){ ///if mouse is NOT over widget and [_isHovering] is still true
+        }else{ ///if mouse is NOT over widget
           setState(() {
             _changes = ContainerChanges.nullValue();
             _isHovering = false;
