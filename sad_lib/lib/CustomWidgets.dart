@@ -224,13 +224,40 @@ class _ButtonViewState extends State<ButtonView> {
   @override
   Widget build(BuildContext context) {
     if(widget.alignment == null){
-      return (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover();
+      return _inkWell();
     }else {
       return Align(
         alignment: widget.alignment,
-        child: (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover(),
+        child: _inkWell(),
       );
     }
+  }
+
+  Widget _inkWell(){
+    return InkWell(
+      onTap: (){
+        widget.onPressed.call();
+      },
+      onHover: (flag){
+        if(flag == true && _isHovering == false){ ///if mouse is currently over widget and [_isHovering] is not yet true
+          setState(() {
+            if(widget.onHover != null) {
+              _changes = widget.onHover;
+            }
+            _isHovering = true;
+          });
+        }else if(flag == false && _isHovering == true){ ///if mouse is NOT over widget and [_isHovering] is still true
+          setState(() {
+            _changes = ContainerChanges.nullValue();
+            _isHovering = false;
+          });
+        }
+      },
+      hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+      splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+      child: (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover(),
+    );
   }
 
   Widget _withHover(){
@@ -241,7 +268,11 @@ class _ButtonViewState extends State<ButtonView> {
       padding: _changes.padding == null ? widget.padding : _changes.padding,
       margin: _changes.margin == null ? widget.margin : _changes.margin,
       decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: _inkWell(),
+      child: widget.builder == null
+          ? widget.children == null
+          ? widget.child
+          : _contentView()
+          : widget.builder(_isHovering),
     );
   }
 
@@ -251,33 +282,6 @@ class _ButtonViewState extends State<ButtonView> {
       padding: _changes.padding == null ? widget.padding : _changes.padding,
       margin: _changes.margin == null ? widget.margin : _changes.margin,
       decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: _inkWell(),
-    );
-  }
-
-  Widget _inkWell(){
-    return InkWell(
-      onTap: (){
-        widget.onPressed.call();
-      },
-      onHover: (flag){
-        if(flag == true){ ///if mouse is currently over widget
-          setState(() {
-            if(widget.onHover != null) {
-              _changes = widget.onHover;
-            }
-            _isHovering = true;
-          });
-        }else{
-          setState(() {
-            _changes = ContainerChanges.nullValue();
-            _isHovering = false;
-          });
-        }
-      },
-      hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
-      splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
       child: widget.builder == null
           ? widget.children == null
           ? widget.child
@@ -295,6 +299,7 @@ class _ButtonViewState extends State<ButtonView> {
       boxShadow: widget.boxShadow == null ? [] : widget.boxShadow,
     );
   }
+
 
   Widget _contentView(){
     if(widget.direction == Direction.horizontal) {
