@@ -224,10 +224,26 @@ class _ButtonViewState extends State<ButtonView> {
   @override
   Widget build(BuildContext context) {
     if(widget.alignment == null){
-      return _inkWell();
+      return _margin();
     }else {
       return Align(
         alignment: widget.alignment,
+        child: _margin(),
+      );
+    }
+  }
+
+  Widget _margin(){
+    if(widget.curve == null || widget.onHover == null){
+      return Padding(
+        padding: widget.margin,
+        child: _inkWell(),
+      );
+    }else{
+      return AnimatedPadding(
+        duration: widget.duration,
+        curve: widget.curve,
+        padding: _changes.margin == null ? widget.margin : _changes.margin,
         child: _inkWell(),
       );
     }
@@ -256,40 +272,38 @@ class _ButtonViewState extends State<ButtonView> {
       hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
       borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
       splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
-      child: (widget.curve == null || widget.onHover == null) ? _noHover() : _withHover(),
+      child: _container(),
     );
   }
 
-  Widget _withHover(){
-    return AnimatedContainer(
-      duration: widget.duration,
-      curve: widget.curve,
-      width: widget.width == Width.fit ? null : double.infinity,
-      padding: _changes.padding == null ? widget.padding : _changes.padding,
-      margin: _changes.margin == null ? widget.margin : _changes.margin,
-      decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: widget.builder == null
-          ? widget.children == null
-          ? widget.child
-          : _contentView()
-          : widget.builder(_isHovering),
-    );
-  }
 
-  Widget _noHover(){
-    return Container(
-      width: widget.width == Width.fit ? null : double.infinity,
-      padding: _changes.padding == null ? widget.padding : _changes.padding,
-      margin: _changes.margin == null ? widget.margin : _changes.margin,
-      decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
-      child: widget.builder == null
-          ? widget.children == null
-          ? widget.child
-          : _contentView()
-          : widget.builder(_isHovering),
-    );
+  Widget _container(){
+    if(widget.curve == null || widget.onHover == null){
+      return Container(
+        width: widget.width == Width.fit ? null : double.infinity,
+        padding: widget.padding,
+        decoration: _decoration(),
+        child: widget.builder == null
+            ? widget.children == null
+            ? widget.child
+            : _contentView()
+            : widget.builder(_isHovering),
+      );
+    }else{
+      return AnimatedContainer(
+        duration: widget.duration,
+        curve: widget.curve,
+        width: widget.width == Width.fit ? null : double.infinity,
+        padding: _changes.padding == null ? widget.padding : _changes.padding,
+        decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
+        child: widget.builder == null
+            ? widget.children == null
+            ? widget.child
+            : _contentView()
+            : widget.builder(_isHovering),
+      );
+    }
   }
-
   BoxDecoration _decoration(){
     return BoxDecoration(
       color: widget.color,
