@@ -218,6 +218,7 @@ class _ButtonViewState extends State<ButtonView> {
   @override
   void initState() {
     _changes = ContainerChanges.nullValue();
+    _isHovering = false;
     super.initState();
   }
 
