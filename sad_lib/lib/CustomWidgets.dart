@@ -251,7 +251,7 @@ class _ButtonViewState extends State<ButtonView> {
   }
 
   Widget _inkWell(){
-    return InkWell(
+    return InkResponse(
       onTap: (){
         widget.onPressed.call();
       },
@@ -386,7 +386,7 @@ class CustomLoader extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 enum ImageType {network, custom}
-class ImageView extends StatelessWidget {
+class ImageView extends StatefulWidget {
 
   final ColorFilter colorFilter;
   final double radius;
@@ -417,7 +417,7 @@ class ImageView extends StatelessWidget {
     this.errorView,
   }) : this.imageType = ImageType.custom,
         this.imageFuture = getCustomImage.call(), this.imageKey = null,
-      super(key: key);
+        super(key: key);
 
   ImageView.network({Key key,
     @required this.imageKey,
@@ -434,68 +434,123 @@ class ImageView extends StatelessWidget {
     this.errorView,
   }) : this.imageFuture = null, this.getCustomImage = null, this.imageType = ImageType.network, super(key: key);
 
+  @override
+  _ImageViewState createState() => _ImageViewState();
+}
+
+class _ImageViewState extends State<ImageView> {
+
+  Image _networkImage;
+  double _width;
+  double _height;
+
+  @override
+  void initState() {
+    _networkImage = Image.network(widget.imageKey,
+      width: widget.maxSize,
+      height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
+      fit: widget.fit,
+      loadingBuilder: (context, widget, chunk){
+        if(chunk == null){
+          return widget;
+        }else {
+          if(super.widget.customLoader == null){
+            return Container();
+          }else{
+            return super.widget.customLoader;
+          }
+        }
+      },
+      errorBuilder: (context, object, stackTrace){
+        if(widget.errorView == null){
+          return TextView(text: "Unable to load image..", size: 15.0,);
+        }else{
+          return widget.errorView;
+        }
+      },
+    );
+    super.initState();
+    _getImage();
+  }
+
+  @override
+  void didUpdateWidget(covariant ImageView oldWidget) {
+    _networkImage = Image.network(widget.imageKey,
+      width: widget.maxSize,
+      height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
+      fit: widget.fit,
+      loadingBuilder: (context, widget, chunk){
+        if(chunk == null){
+          return widget;
+        }else {
+          if(super.widget.customLoader == null){
+            return Container();
+          }else{
+            return super.widget.customLoader;
+          }
+        }
+      },
+      errorBuilder: (context, object, stackTrace){
+        if(widget.errorView == null){
+          return TextView(text: "Unable to load image..", size: 15.0,);
+        }else{
+          return widget.errorView;
+        }
+      },
+    );
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: margin,
+      padding: widget.margin,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(widget.radius),
         child: ColorFiltered(
-          colorFilter: colorFilter,
-          child: imageType == ImageType.network ? _networkImage() : _customImage(),
+          colorFilter: widget.colorFilter,
+          child: widget.imageType == ImageType.network ? _networkImage : _customImage(),
         ),
       ),
     );
   }
 
-  Widget _networkImage(){
-    return Image.network(imageKey,
-      width: maxSize,
-      height: maxSize == null ? null : maxSize/aspectRatio,
-      fit: fit,
-      loadingBuilder: (context, widget, chunk){
-        if(chunk == null){
-          return widget;
-        }else {
-          if(customLoader == null){
-            return Container();
-          }else{
-            return customLoader;
-          }
-        }
+  void _getImage() {
+    _networkImage.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
+        setState(() {
+          //info.image.toByteData().then((value) => value.buffer.)
+          _width = info.image.width.toDouble();
+          _height = info.image.height.toDouble();
+        });
+        info.image.dispose();
       },
-      errorBuilder: (context, object, stackTrace){
-        if(errorView == null){
-          return TextView(text: "Unable to load image..", size: 15.0,);
-        }else{
-          return errorView;
-        }
-      },
+      ),
     );
   }
 
   Widget _customImage(){
     return FutureBuilder(
-      future: imageFuture,
+      future: widget.imageFuture,
       builder: (context, snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           if(snapshot.hasData && snapshot.data != null){
             return RawImage(image: snapshot.data,
-              width: maxSize,
-              height: maxSize == null ? null : maxSize/aspectRatio,
-              fit: fit,
+              width: widget.maxSize,
+              height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
+              fit: widget.fit,
             );
           }else{
-            return errorView == null ? TextView(text: "Unable to load image..", size: 15.0,)
-                : errorView;
+            return widget.errorView == null ? TextView(text: "Unable to load image..", size: 15.0,)
+                : widget.errorView;
           }
         }else{
           return Container(
-              alignment: Alignment.center,
-              width: maxSize,
-              height: maxSize/aspectRatio,
-              child: customLoader,
+            alignment: Alignment.center,
+            width: widget.maxSize,
+            height: widget.maxSize/widget.aspectRatio,
+            child: widget.customLoader,
           );
         }
       },
@@ -683,6 +738,7 @@ class _HoverWidgetState extends State<HoverWidget> {
   void initState() {
     _container = widget.idle;
     _changes = ContainerChanges.nullValue();
+    _isHovering = false;
     super.initState();
   }
 
@@ -703,24 +759,20 @@ class _HoverWidgetState extends State<HoverWidget> {
       padding: _changes.padding == null ? _container.padding : _changes.padding,
       margin: _changes.margin == null ? _container.margin : _changes.margin,
       decoration: _changes.decoration == null ? _container.decoration : _changes.decoration,
-      child: InkWell(
-        onTap: (){
-
+      child: MouseRegion(
+        onEnter: (pointerEnterEvent){ ///if mouse is currently over widget
+          setState(() {
+            _changes = widget.onHover;
+            _isHovering = true;
+          });
         },
-        onHover: (flag){
-          if(flag == true){ ///if mouse is currently over widget
-            setState(() {
-              _changes = widget.onHover;
-              _isHovering = true;
-            });
-          }else{
-            setState(() {
-              _changes = ContainerChanges.nullValue();
-              _isHovering = false;
-            });
-          }
+        onExit: (pointerExitEvent){ ///if mouse NOT is currently over widget
+          setState(() {
+            _changes = ContainerChanges.nullValue();
+            _isHovering = false;
+          });
         },
-        mouseCursor: MouseCursor.defer,
+        cursor: MouseCursor.defer,
         child: widget.child == null ? widget.builder(_isHovering,) : widget.child,
       ),
     );

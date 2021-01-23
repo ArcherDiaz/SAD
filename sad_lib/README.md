@@ -12,3 +12,15 @@ multiple Flutter or Dart projects.
 For help getting started with Flutter, view our 
 [online documentation](https://flutter.dev/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
+
+
+
+Custom Widgets:
+- TextView widget needs an onPressed callback function
+- ButtonView widget needs a splash color(currently only works on white)
+- ButtonView widget needs a hover color
+- ImageView widget need optional effect that makes the image zoom in and out slowly
+- Carousel widget needs endless scrolling
+
+Dialogs:
+- dialogs need a header parameter of type widget
