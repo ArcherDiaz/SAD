@@ -409,7 +409,7 @@ class ImageView extends StatefulWidget {
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
-    this.aspectRatio = 1.0,
+    this.aspectRatio,
     this.maxSize,
     this.fit = BoxFit.cover,
 
@@ -425,7 +425,7 @@ class ImageView extends StatefulWidget {
     this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
-    this.aspectRatio = 1.0,
+    this.aspectRatio,
 
     this.maxSize,
     this.fit = BoxFit.cover,
@@ -444,60 +444,71 @@ class _ImageViewState extends State<ImageView> {
   double _width;
   double _height;
 
+  double _ratio;
+
   @override
   void initState() {
-    _networkImage = Image.network(widget.imageKey,
-      width: widget.maxSize,
-      height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
-      fit: widget.fit,
-      loadingBuilder: (context, widget, chunk){
-        if(chunk == null){
-          return widget;
-        }else {
-          if(super.widget.customLoader == null){
-            return Container();
-          }else{
-            return super.widget.customLoader;
-          }
-        }
-      },
-      errorBuilder: (context, object, stackTrace){
-        if(widget.errorView == null){
-          return TextView(text: "Unable to load image..", size: 15.0,);
-        }else{
-          return widget.errorView;
-        }
-      },
-    );
+    _ratio = widget.aspectRatio;
     super.initState();
-    _getImage();
+
+    if(widget.imageType == ImageType.network) {
+      _networkImage = Image.network(widget.imageKey,
+        width: widget.maxSize,
+        height: (widget.maxSize == null || _ratio == null) ? null : widget
+            .maxSize / _ratio,
+        fit: widget.fit,
+        loadingBuilder: (context, widget, chunk) {
+          if (chunk == null) {
+            return widget;
+          } else {
+            if (super.widget.customLoader == null) {
+              return Container();
+            } else {
+              return super.widget.customLoader;
+            }
+          }
+        },
+        errorBuilder: (context, object, stackTrace) {
+          if (widget.errorView == null) {
+            return TextView(text: "Unable to load image..", size: 15.0,);
+          } else {
+            return widget.errorView;
+          }
+        },
+      );
+      _getImage();
+    }
   }
 
   @override
   void didUpdateWidget(covariant ImageView oldWidget) {
-    _networkImage = Image.network(widget.imageKey,
-      width: widget.maxSize,
-      height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
-      fit: widget.fit,
-      loadingBuilder: (context, widget, chunk){
-        if(chunk == null){
-          return widget;
-        }else {
-          if(super.widget.customLoader == null){
-            return Container();
-          }else{
-            return super.widget.customLoader;
+    _ratio = widget.aspectRatio;
+    if(widget.imageType == ImageType.network) {
+      _networkImage = Image.network(widget.imageKey,
+        width: widget.maxSize,
+        height: (widget.maxSize == null || _ratio == null) ? null : widget
+            .maxSize / _ratio,
+        fit: widget.fit,
+        loadingBuilder: (context, widget, chunk) {
+          if (chunk == null) {
+            return widget;
+          } else {
+            if (super.widget.customLoader == null) {
+              return Container();
+            } else {
+              return super.widget.customLoader;
+            }
           }
-        }
-      },
-      errorBuilder: (context, object, stackTrace){
-        if(widget.errorView == null){
-          return TextView(text: "Unable to load image..", size: 15.0,);
-        }else{
-          return widget.errorView;
-        }
-      },
-    );
+        },
+        errorBuilder: (context, object, stackTrace) {
+          if (widget.errorView == null) {
+            return TextView(text: "Unable to load image..", size: 15.0,);
+          } else {
+            return widget.errorView;
+          }
+        },
+      );
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -515,21 +526,6 @@ class _ImageViewState extends State<ImageView> {
     );
   }
 
-  void _getImage() {
-    _networkImage.image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool synchronousCall) {
-        ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
-        setState(() {
-          //info.image.toByteData().then((value) => value.buffer.)
-          _width = info.image.width.toDouble();
-          _height = info.image.height.toDouble();
-        });
-        info.image.dispose();
-      },
-      ),
-    );
-  }
-
   Widget _customImage(){
     return FutureBuilder(
       future: widget.imageFuture,
@@ -538,7 +534,7 @@ class _ImageViewState extends State<ImageView> {
           if(snapshot.hasData && snapshot.data != null){
             return RawImage(image: snapshot.data,
               width: widget.maxSize,
-              height: widget.maxSize == null ? null : widget.maxSize/widget.aspectRatio,
+              height: (widget.maxSize == null || _ratio == null) ? null : widget.maxSize/_ratio,
               fit: widget.fit,
             );
           }else{
@@ -549,11 +545,30 @@ class _ImageViewState extends State<ImageView> {
           return Container(
             alignment: Alignment.center,
             width: widget.maxSize,
-            height: widget.maxSize/widget.aspectRatio,
+            height: (widget.maxSize == null || _ratio == null) ? null : widget.maxSize/_ratio,
             child: widget.customLoader,
           );
         }
       },
+    );
+  }
+
+  void _getImage() {
+    _networkImage.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
+        setState(() {
+          //info.image.toByteData().then((value) => value.buffer.)
+          _width = info.image.width.toDouble();
+          _height = info.image.height.toDouble();
+          if(_ratio == null){
+            _ratio = _width/_height;
+          }
+        });
+        print("\nImage Info: |${widget.imageKey}|"
+            "\n\t maxSize: ${widget.maxSize}\t|\tactualWidth: $_width\t|\tactualHeight: $_height");
+      },
+      ),
     );
   }
 
