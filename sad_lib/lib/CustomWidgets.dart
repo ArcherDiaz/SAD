@@ -565,8 +565,10 @@ class _ImageViewState extends State<ImageView> {
             _ratio = _width/_height;
           }
         });
-        print("\nImage Info: |${widget.imageKey}|"
-            "\n\t maxSize: ${widget.maxSize}\t|\tactualWidth: $_width\t|\tactualHeight: $_height");
+//        print("\nImage Info: | ${widget.imageKey} |"
+//            "\n\t maxSize: ${widget.maxSize}"
+//            "\t|\tactualWidth: $_width"
+//            "\t|\tactualHeight: $_height");
       },
       ),
     );
