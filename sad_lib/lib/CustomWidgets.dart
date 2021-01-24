@@ -251,7 +251,7 @@ class _ButtonViewState extends State<ButtonView> {
   }
 
   Widget _inkWell(){
-    return InkResponse(
+    return InkWell(
       onTap: (){
         widget.onPressed.call();
       },
@@ -569,8 +569,7 @@ class _ImageViewState extends State<ImageView> {
 //            "\n\t maxSize: ${widget.maxSize}"
 //            "\t|\tactualWidth: $_width"
 //            "\t|\tactualHeight: $_height");
-      },
-      ),
+      },),
     );
   }
 
