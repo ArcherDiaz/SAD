@@ -527,11 +527,15 @@ class _ImageViewState extends State<ImageView> {
       padding: widget.margin,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.radius),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: widget.colorFilter,
-          ),
-          child: widget.imageType == ImageType.network ? _networkImage : _customImage(),
+        child: Stack(
+          children: [
+            widget.imageType == ImageType.network
+                ? _networkImage
+                : _customImage(),
+            Container(
+              color: widget.colorFilter,
+            ),
+          ],
         ),
       ),
     );
@@ -545,7 +549,11 @@ class _ImageViewState extends State<ImageView> {
           if(snapshot.hasData && snapshot.data != null){
             return RawImage(image: snapshot.data,
               width: widget.width,
-              height: (widget.width == null || _ratio == null) ? null : widget.width/_ratio,
+              height: widget.height == null
+                  ? (widget.width == null || _ratio == null)
+                  ? null
+                  : widget.width / _ratio
+                  : widget.height,
               fit: widget.fit,
             );
           }else{
