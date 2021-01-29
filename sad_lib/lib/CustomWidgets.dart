@@ -527,15 +527,23 @@ class _ImageViewState extends State<ImageView> {
       padding: widget.margin,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.radius),
-        child: Stack(
-          children: [
-            widget.imageType == ImageType.network
-                ? _networkImage
-                : _customImage(),
-            Container(
-              color: widget.colorFilter,
-            ),
-          ],
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height == null
+              ? (widget.width == null || _ratio == null)
+                  ? null
+                  : widget.width / _ratio
+              : widget.height,
+          child: Stack(
+            children: [
+              widget.imageType == ImageType.network
+                  ? _networkImage
+                  : _customImage(),
+              Container(
+                color: widget.colorFilter,
+              ),
+            ],
+          ),
         ),
       ),
     );
