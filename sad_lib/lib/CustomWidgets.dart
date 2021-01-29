@@ -202,7 +202,7 @@ class ButtonView extends StatefulWidget {
     this.builder,
 
     @required this.onHover,
-    this.duration = const Duration(seconds: 1),
+    this.duration = const Duration(milliseconds: 25,),
     this.curve = Curves.linear,
   }) : super(key: key);
 
@@ -388,12 +388,13 @@ class CustomLoader extends StatelessWidget {
 enum ImageType {network, custom}
 class ImageView extends StatefulWidget {
 
-  final ColorFilter colorFilter;
+  final Color colorFilter;
   final double radius;
-  final double aspectRatio;
+  final double aspectRatio; ///if the [height] parameter is specified, then value is overridden
   final EdgeInsets margin;
   final BoxFit fit;
-  final double maxSize;
+  final double width;
+  final double height; ///the [height] parameter overrides the [aspectRatio] parameter
 
   final String imageKey;
   final ImageType imageType;
@@ -406,11 +407,12 @@ class ImageView extends StatefulWidget {
   ImageView.custom({Key key,
     @required this.getCustomImage,
 
-    this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+    this.colorFilter = Colors.transparent,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
-    this.maxSize,
+    this.width,
+    this.height,
     this.fit = BoxFit.cover,
 
     this.customLoader,
@@ -422,12 +424,13 @@ class ImageView extends StatefulWidget {
   ImageView.network({Key key,
     @required this.imageKey,
 
-    this.colorFilter = const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+    this.colorFilter = Colors.transparent,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
 
-    this.maxSize,
+    this.width,
+    this.height,
     this.fit = BoxFit.cover,
     this.customLoader,
 
@@ -453,9 +456,12 @@ class _ImageViewState extends State<ImageView> {
 
     if(widget.imageType == ImageType.network) {
       _networkImage = Image.network(widget.imageKey,
-        width: widget.maxSize,
-        height: (widget.maxSize == null || _ratio == null) ? null : widget
-            .maxSize / _ratio,
+        width: widget.width,
+        height: widget.height == null
+            ? (widget.width == null || _ratio == null)
+                ? null
+                : widget.width / _ratio
+            : widget.height,
         fit: widget.fit,
         loadingBuilder: (context, widget, chunk) {
           if (chunk == null) {
@@ -485,9 +491,12 @@ class _ImageViewState extends State<ImageView> {
     _ratio = widget.aspectRatio;
     if(widget.imageType == ImageType.network) {
       _networkImage = Image.network(widget.imageKey,
-        width: widget.maxSize,
-        height: (widget.maxSize == null || _ratio == null) ? null : widget
-            .maxSize / _ratio,
+        width: widget.width,
+        height: widget.height == null
+            ? (widget.width == null || _ratio == null)
+                ? null
+                : widget.width / _ratio
+            : widget.height,
         fit: widget.fit,
         loadingBuilder: (context, widget, chunk) {
           if (chunk == null) {
@@ -518,8 +527,10 @@ class _ImageViewState extends State<ImageView> {
       padding: widget.margin,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.radius),
-        child: ColorFiltered(
-          colorFilter: widget.colorFilter,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: widget.colorFilter,
+          ),
           child: widget.imageType == ImageType.network ? _networkImage : _customImage(),
         ),
       ),
@@ -533,8 +544,8 @@ class _ImageViewState extends State<ImageView> {
         if(snapshot.connectionState == ConnectionState.done){
           if(snapshot.hasData && snapshot.data != null){
             return RawImage(image: snapshot.data,
-              width: widget.maxSize,
-              height: (widget.maxSize == null || _ratio == null) ? null : widget.maxSize/_ratio,
+              width: widget.width,
+              height: (widget.width == null || _ratio == null) ? null : widget.width/_ratio,
               fit: widget.fit,
             );
           }else{
@@ -544,8 +555,8 @@ class _ImageViewState extends State<ImageView> {
         }else{
           return Container(
             alignment: Alignment.center,
-            width: widget.maxSize,
-            height: (widget.maxSize == null || _ratio == null) ? null : widget.maxSize/_ratio,
+            width: widget.width,
+            height: (widget.width == null || _ratio == null) ? null : widget.width/_ratio,
             child: widget.customLoader,
           );
         }
@@ -657,6 +668,7 @@ class _CustomCarouselState extends State<CustomCarousel> {
               });
             },
           ),
+
           if(widget.showPageIndicator == true)
             Padding(
               padding: EdgeInsets.all(10.0,),
@@ -734,7 +746,7 @@ class HoverWidget extends StatefulWidget {
     this.idle,
     this.onHover,
     this.builder,
-    this.duration = const Duration(seconds: 1),
+    this.duration = const Duration(milliseconds: 25,),
     this.curve = Curves.linear,
     this.width,
     this.height,
