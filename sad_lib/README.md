@@ -22,6 +22,9 @@ Custom Widgets:
 - ImageView widget need to accommodate for using images from assets
 - ImageView widget need optional effect that makes the image zoom in and out slowly
 - ImageView widget need to provide the ability to get the Uin8List of the image they display
+- ImageView widget need to fix [colorFilter]
+- ImageView widget needs an optional height parameter
+- Carousel widget needs to make [aspectRatio] not necessary, nor to make it affect things when not specified
 - Carousel widget needs endless scrolling
 
 Dialogs:
