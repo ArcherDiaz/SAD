@@ -21,6 +21,7 @@ Custom Widgets:
 - ButtonView widget needs a splash color(currently only works on white)
 - ButtonView widget needs a hover color
 
+- ImageView widget need to have an optional [child] or [children] parameter that goes on the stack
 - ImageView widget need to accommodate for using images from assets
 - ImageView widget need optional effect that makes the image zoom in and out slowly
 - ImageView widget need to provide the ability to get the Uin8List of the image they display
