@@ -613,14 +613,12 @@ class _ImageViewState extends State<ImageView> {
         info.image.toByteData().then((value){
           _imageData = value.buffer.asUint8List();
         });
-        setState(() {
-          _width = info.image.width.toDouble();
-          _height = info.image.height.toDouble();
-          if(_ratio == null){
-            ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
-            _ratio = _width/_height;
-          }
-        });
+        _width = info.image.width.toDouble();
+        _height = info.image.height.toDouble();
+        if(_ratio == null){
+          ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
+          _ratio = _width/_height;
+        }
 //        print("\nImage Info: | ${widget.imageKey} |"
 //            "\n\t maxSize: ${widget.maxSize}"
 //            "\t|\tactualWidth: $_width"
