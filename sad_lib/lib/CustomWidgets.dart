@@ -52,7 +52,8 @@ class TextView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-      child: isSelectable == false ? _normal()
+      child: isSelectable == false
+          ? _normal()
           : _selectable(),
     );
   }
@@ -102,7 +103,7 @@ class TextView extends StatelessWidget {
         autofocus: false,
         maxLines: maxLines,
         textAlign: align,
-        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
+        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true,),
         style: TextStyle(
           fontSize: size,
           letterSpacing: letterSpacing,
@@ -132,7 +133,7 @@ class TextView extends StatelessWidget {
         autofocus: false,
         maxLines: maxLines,
         textAlign: align,
-        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true),
+        toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true,),
       );
     }
   }
@@ -270,9 +271,9 @@ class _ButtonViewState extends State<ButtonView> {
           });
         }
       },
-      hoverColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
       borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
-      splashColor: widget.color.value == Colors.white.value ? Colors.black.withOpacity(0.25) : Colors.white.withOpacity(0.25),
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
       child: _container(),
     );
   }
@@ -403,9 +404,15 @@ class ImageView extends StatefulWidget {
 
   final Widget errorView;
   final Widget customLoader;
+  final Widget child;
+  final List<Widget> children; ///the [children] parameter will override the [child] parameter if specified
+
+  final void Function(Uint8List) getImage;
+  ///this function will return the data of the image being displayed. Will return a null if the image is still loading
 
   ImageView.custom({Key key,
     @required this.getCustomImage,
+    this.getImage,
 
     this.colorFilter = Colors.transparent,
     this.margin = EdgeInsets.zero,
@@ -417,24 +424,30 @@ class ImageView extends StatefulWidget {
 
     this.customLoader,
     this.errorView,
+
+    this.child,
+    this.children,
   }) : this.imageType = ImageType.custom,
         this.imageFuture = getCustomImage.call(), this.imageKey = null,
         super(key: key);
 
   ImageView.network({Key key,
     @required this.imageKey,
+    this.getImage,
 
     this.colorFilter = Colors.transparent,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
-
     this.width,
     this.height,
     this.fit = BoxFit.cover,
-    this.customLoader,
 
+    this.customLoader,
     this.errorView,
+
+    this.child,
+    this.children,
   }) : this.imageFuture = null, this.getCustomImage = null, this.imageType = ImageType.network, super(key: key);
 
   @override
@@ -442,6 +455,8 @@ class ImageView extends StatefulWidget {
 }
 
 class _ImageViewState extends State<ImageView> {
+
+  Uint8List _imageData;
 
   Image _networkImage;
   double _width;
@@ -482,7 +497,7 @@ class _ImageViewState extends State<ImageView> {
           }
         },
       );
-      _getImage();
+      _loadNetworkImageData();
     }
   }
 
@@ -525,24 +540,36 @@ class _ImageViewState extends State<ImageView> {
   Widget build(BuildContext context) {
     return Padding(
       padding: widget.margin,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.radius),
-        child: SizedBox(
-          width: widget.width,
-          height: widget.height == null
-              ? (widget.width == null || _ratio == null)
-                  ? null
-                  : widget.width / _ratio
-              : widget.height,
-          child: Stack(
-            children: [
-              widget.imageType == ImageType.network
-                  ? _networkImage
-                  : _customImage(),
-              Container(
-                color: widget.colorFilter,
-              ),
-            ],
+      child: GestureDetector(
+        onTap: (){
+          widget.getImage(_imageData,);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(widget.radius),
+          child: SizedBox(
+            width: widget.width,
+            height: widget.height == null
+                ? (widget.width == null || _ratio == null)
+                    ? null
+                    : widget.width / _ratio
+                : widget.height,
+            child: Stack(
+              children: [
+                widget.imageType == ImageType.network
+                    ? _networkImage
+                    : _customImage(),
+                Container(
+                  color: widget.colorFilter,
+                ),
+
+                if(widget.children != null)
+                  for(int i = 0; i < widget.children.length; i++)
+                    widget.children[i],
+
+                if(widget.child != null)
+                  widget.child
+              ],
+            ),
           ),
         ),
       ),
@@ -580,15 +607,17 @@ class _ImageViewState extends State<ImageView> {
     );
   }
 
-  void _getImage() {
+  void _loadNetworkImageData() {
     _networkImage.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener((ImageInfo info, bool synchronousCall) {
-        ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
+        info.image.toByteData().then((value){
+          _imageData = value.buffer.asUint8List();
+        });
         setState(() {
-          //info.image.toByteData().then((value) => value.buffer.)
           _width = info.image.width.toDouble();
           _height = info.image.height.toDouble();
           if(_ratio == null){
+            ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
             _ratio = _width/_height;
           }
         });
