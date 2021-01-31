@@ -479,12 +479,12 @@ class _ImageViewState extends State<ImageView> {
             : widget.height,
         fit: widget.fit,
         loadingBuilder: (context, widget, chunk) {
-          if (chunk == null) {
+          if(chunk == null) {
             return widget;
-          } else {
-            if (super.widget.customLoader == null) {
+          }else{
+            if(super.widget.customLoader == null) {
               return Container();
-            } else {
+            }else{
               return super.widget.customLoader;
             }
           }
@@ -503,8 +503,10 @@ class _ImageViewState extends State<ImageView> {
 
   @override
   void didUpdateWidget(covariant ImageView oldWidget) {
-    _ratio = widget.aspectRatio;
-    if(widget.imageType == ImageType.network) {
+    if(oldWidget.aspectRatio == null && widget.aspectRatio != null) {
+      _ratio = widget.aspectRatio;
+    }
+    if(widget.imageType == ImageType.network && oldWidget.imageKey != widget.imageKey) {
       _networkImage = Image.network(widget.imageKey,
         width: widget.width,
         height: widget.height == null
