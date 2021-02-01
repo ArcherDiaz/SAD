@@ -498,7 +498,7 @@ class _ImageViewState extends State<ImageView> {
           }
         },
       );
-      _loadNetworkImageData();
+      //_loadNetworkImageData();
     }
   }
 
