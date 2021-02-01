@@ -16,10 +16,13 @@ samples, guidance on mobile development, and a full API reference.
 
 
 Custom Widgets:
+- ButtonViw widget need to have it's vertical view's column be aligned start
+
 - ImageView widget need to accommodate for using images from assets
 - ImageView widget need optional effect that makes the image zoom in and out slowly
 
 - Carousel widget needs to have the ability to fade in next image instead of sliding
+- Carousel widget needs to have its default aspect ratio be 1.0
 
 Dialogs:
 - dialogs need a header parameter of type widget
