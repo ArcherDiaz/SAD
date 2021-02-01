@@ -493,6 +493,7 @@ class _ImageViewState extends State<ImageView> {
           if (widget.errorView == null) {
             return TextView(text: "Unable to load image..", size: 15.0,);
           } else {
+            print("stacktrace: ${stackTrace.toString()}");
             return widget.errorView;
           }
         },
@@ -530,6 +531,7 @@ class _ImageViewState extends State<ImageView> {
           if (widget.errorView == null) {
             return TextView(text: "Unable to load image..", size: 15.0,);
           } else {
+            print("stacktrace 2: ${stackTrace.toString()}");
             return widget.errorView;
           }
         },
@@ -544,7 +546,9 @@ class _ImageViewState extends State<ImageView> {
       padding: widget.margin,
       child: GestureDetector(
         onTap: (){
-          widget.getImage(_imageData,);
+          if(widget.getImage != null) {
+            widget.getImage(_imageData,);
+          }
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(widget.radius),
@@ -556,6 +560,7 @@ class _ImageViewState extends State<ImageView> {
                     : widget.width / _ratio
                 : widget.height,
             child: Stack(
+              alignment: Alignment.center,
               children: [
                 widget.imageType == ImageType.network
                     ? _networkImage
