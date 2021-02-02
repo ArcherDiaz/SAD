@@ -458,7 +458,6 @@ class _ImageViewState extends State<ImageView> {
 
   Uint8List _imageData;
 
-  Image _networkImage;
   double _width;
   double _height;
 
@@ -468,74 +467,12 @@ class _ImageViewState extends State<ImageView> {
   void initState() {
     _ratio = widget.aspectRatio;
     super.initState();
-
-    if(widget.imageType == ImageType.network) {
-      _networkImage = Image.network(widget.imageKey,
-        width: widget.width,
-        height: widget.height == null
-            ? (widget.width == null || _ratio == null)
-                ? null
-                : widget.width / _ratio
-            : widget.height,
-        fit: widget.fit,
-        loadingBuilder: (context, widget, chunk) {
-          if(chunk == null) {
-            return widget;
-          }else{
-            if(super.widget.customLoader == null) {
-              return Container();
-            }else{
-              return super.widget.customLoader;
-            }
-          }
-        },
-        errorBuilder: (context, object, stackTrace) {
-          if (widget.errorView == null) {
-            return TextView(text: "Unable to load image..", size: 15.0,);
-          } else {
-            print("stacktrace: ${stackTrace.toString()}");
-            return widget.errorView;
-          }
-        },
-      );
-      //_loadNetworkImageData();
-    }
   }
 
   @override
   void didUpdateWidget(covariant ImageView oldWidget) {
     if(oldWidget.aspectRatio == null && widget.aspectRatio != null) {
       _ratio = widget.aspectRatio;
-    }
-    if(widget.imageType == ImageType.network && oldWidget.imageKey != widget.imageKey) {
-      _networkImage = Image.network(widget.imageKey,
-        width: widget.width,
-        height: widget.height == null
-            ? (widget.width == null || _ratio == null)
-                ? null
-                : widget.width / _ratio
-            : widget.height,
-        fit: widget.fit,
-        loadingBuilder: (context, widget, chunk) {
-          if (chunk == null) {
-            return widget;
-          } else {
-            if (super.widget.customLoader == null) {
-              return Container();
-            } else {
-              return super.widget.customLoader;
-            }
-          }
-        },
-        errorBuilder: (context, object, stackTrace) {
-          if (widget.errorView == null) {
-            return TextView(text: "Unable to load image..", size: 15.0,);
-          } else {
-            print("stacktrace 2: ${stackTrace.toString()}");
-            return widget.errorView;
-          }
-        },
-      );
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -544,42 +481,66 @@ class _ImageViewState extends State<ImageView> {
   Widget build(BuildContext context) {
     return Padding(
       padding: widget.margin,
-      child: GestureDetector(
-        onTap: (){
-          if(widget.getImage != null) {
-            widget.getImage(_imageData,);
-          }
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(widget.radius),
-          child: SizedBox(
-            width: widget.width,
-            height: widget.height == null
-                ? (widget.width == null || _ratio == null)
-                    ? null
-                    : widget.width / _ratio
-                : widget.height,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                widget.imageType == ImageType.network
-                    ? _networkImage
-                    : _customImage(),
-                Container(
-                  color: widget.colorFilter,
-                ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(widget.radius),
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height == null
+              ? (widget.width == null || _ratio == null)
+                  ? null
+                  : widget.width / _ratio
+              : widget.height,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              widget.imageType == ImageType.network
+                  ? _networkImage()
+                  : _customImage(),
+              Container(
+                color: widget.colorFilter,
+              ),
 
-                if(widget.children != null)
-                  for(int i = 0; i < widget.children.length; i++)
-                    widget.children[i],
+              if(widget.children != null)
+                for(int i = 0; i < widget.children.length; i++)
+                  widget.children[i],
 
-                if(widget.child != null)
-                  widget.child
-              ],
-            ),
+              if(widget.child != null)
+                widget.child
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _networkImage(){
+    return Image.network(widget.imageKey,
+      width: widget.width,
+      height: widget.height == null
+          ? (widget.width == null || _ratio == null)
+          ? null
+          : widget.width / _ratio
+          : widget.height,
+      fit: widget.fit,
+      loadingBuilder: (context, widget, chunk) {
+        if(chunk == null) {
+          return widget;
+        }else{
+          if(super.widget.customLoader == null) {
+            return Container();
+          }else{
+            return super.widget.customLoader;
+          }
+        }
+      },
+      errorBuilder: (context, object, stackTrace) {
+        if (widget.errorView == null) {
+          return TextView(text: "Unable to load image..", size: 15.0,);
+        } else {
+          print("stacktrace: ${stackTrace.toString()}");
+          return widget.errorView;
+        }
+      },
     );
   }
 
@@ -615,7 +576,7 @@ class _ImageViewState extends State<ImageView> {
   }
 
   void _loadNetworkImageData() {
-    _networkImage.image.resolve(ImageConfiguration()).addListener(
+    Image.network("").image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener((ImageInfo info, bool synchronousCall) {
         info.image.toByteData().then((value){
           _imageData = value.buffer.asUint8List();
