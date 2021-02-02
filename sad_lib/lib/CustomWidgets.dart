@@ -329,7 +329,7 @@ class _ButtonViewState extends State<ButtonView> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: (widget.width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: widget.children,
       );
     }
@@ -656,7 +656,7 @@ class CustomCarousel extends StatefulWidget {
     this.showPageIndicator = true,
     this.indicatorColor = Colors.white,
     this.secondsToSwap = 5,
-    this.aspectRatio = 2.0,
+    this.aspectRatio = 1.0,
     this.viewportFraction = 1.0,
     @required this.children,
   }) : this.childrenLength = children.length,  this.childrenBuilder = null, super(key: key);
@@ -665,7 +665,7 @@ class CustomCarousel extends StatefulWidget {
     this.showPageIndicator = true,
     this.indicatorColor = Colors.white,
     this.secondsToSwap = 5,
-    this.aspectRatio = 2.0,
+    this.aspectRatio = 1.0,
     this.viewportFraction = 1.0,
     @required this.childrenLength,
     @required this.childrenBuilder,
