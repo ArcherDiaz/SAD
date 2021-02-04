@@ -16,6 +16,8 @@ samples, guidance on mobile development, and a full API reference.
 
 
 Custom Widgets:
+- TextView widget needs a lineSpacing parameter
+
 - ImageView widget need to accommodate for using images from assets
 - ImageView widget need optional effect that makes the image zoom in and out slowly
 
