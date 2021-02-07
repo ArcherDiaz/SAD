@@ -14,6 +14,7 @@ class TextView extends StatelessWidget {
   final FontWeight fontWeight;
   final FontStyle fontStyle;
   final double letterSpacing;
+  final double lineSpacing;
   final TextOverflow textOverflow;
   final int maxLines;
   final List<Shadow> shadows;
@@ -28,6 +29,7 @@ class TextView extends StatelessWidget {
     this.fontWeight = FontWeight.w400,
     this.fontStyle = FontStyle.normal,
     this.letterSpacing = 0.75,
+    this.lineSpacing,
     this.textOverflow = TextOverflow.clip,
     this.maxLines,
     this.shadows,
@@ -44,6 +46,7 @@ class TextView extends StatelessWidget {
         this.fontWeight = null,
         this.fontStyle = null,
         this.letterSpacing = null,
+        this.lineSpacing = null,
         this.textOverflow = null,
         this.maxLines = null,
         this.shadows = null, super(key: key);
@@ -67,6 +70,7 @@ class TextView extends StatelessWidget {
         style: TextStyle(
           fontSize: size,
           letterSpacing: letterSpacing,
+          height: lineSpacing,
           fontWeight: fontWeight,
           fontStyle: fontStyle,
           color: color,
@@ -81,6 +85,7 @@ class TextView extends StatelessWidget {
                 style: TextStyle(
                   fontSize: textView.size,
                   letterSpacing: textView.letterSpacing,
+                  height: textView.lineSpacing,
                   fontWeight: textView.fontWeight,
                   fontStyle: textView.fontStyle,
                   color: textView.color,
@@ -107,6 +112,7 @@ class TextView extends StatelessWidget {
         style: TextStyle(
           fontSize: size,
           letterSpacing: letterSpacing,
+          height: lineSpacing,
           fontWeight: fontWeight,
           fontStyle: fontStyle,
           color: color,
@@ -121,6 +127,7 @@ class TextView extends StatelessWidget {
               style: TextStyle(
                 fontSize: textView.size,
                 letterSpacing: textView.letterSpacing,
+                height: lineSpacing,
                 fontWeight: textView.fontWeight,
                 fontStyle: textView.fontStyle,
                 color: textView.color,
