@@ -37,18 +37,19 @@ class DialogClass {
             backgroundColor: background,
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
-              padding: EdgeInsets.all(10.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   if(header != null)
                     header,
+                  
                   TextView(text: message,
-                    padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0,),
+                    padding: EdgeInsets.all(20.0,),
                     align: TextAlign.start,
                     isSelectable: true,
                     color: textColor,
                   ),
+                  
                   Row(
                     children: <Widget>[
                       if(negativeButton)
@@ -56,6 +57,7 @@ class DialogClass {
                           onPressed: (){
                             Navigator.of(context).pop(false);
                           },
+                          margin: EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0,),
                           padding: EdgeInsets.all(10.0),
                           children: [
                             TextView(text: negative.toUpperCase(),
@@ -70,6 +72,7 @@ class DialogClass {
                         onPressed: (){
                           Navigator.of(context).pop(true);
                         },
+                        margin: EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0,),
                         padding: EdgeInsets.all(10.0),
                         children: [
                           TextView(text: positive.toUpperCase(),
