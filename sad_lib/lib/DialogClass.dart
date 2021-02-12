@@ -16,7 +16,7 @@ class DialogClass {
   DialogClass({@required this.background, @required this.buttonColor, @required this.buttonTextColor, @required this.textColor});
 
 
-  Future<bool> assureDialog(BuildContext context, {@required String message, bool dismissible = true, String title = "null", bool negativeButton = true, String negative = "CANCEL", String positive = "CONFIRM"}) {
+  Future<bool> assureDialog(BuildContext context, {@required String message, bool dismissible = true, Widget header, bool negativeButton = true, String negative = "CANCEL", String positive = "CONFIRM",}) {
     return showDialog(context: context, barrierDismissible: dismissible, builder: (context) {
       return Stack(
         alignment: Alignment.center,
@@ -41,6 +41,8 @@ class DialogClass {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  if(header != null)
+                    header,
                   TextView(text: message,
                     padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0,),
                     align: TextAlign.start,
@@ -51,18 +53,18 @@ class DialogClass {
                     children: <Widget>[
                       if(negativeButton)
                         ButtonView(
-                        onPressed: (){
-                          Navigator.of(context).pop(false);
-                        },
-                        padding: EdgeInsets.all(10.0),
-                        children: [
-                          TextView(text: negative.toUpperCase(),
-                            size: 15.0,
-                            color: buttonColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ],
-                      ),
+                          onPressed: (){
+                            Navigator.of(context).pop(false);
+                          },
+                          padding: EdgeInsets.all(10.0),
+                          children: [
+                            TextView(text: negative.toUpperCase(),
+                              size: 15.0,
+                              color: buttonColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ],
+                        ),
                       Spacer(),
                       ButtonView(
                         onPressed: (){
@@ -529,7 +531,7 @@ class DialogClass {
                 alignment: Alignment.topRight,
                 borderRadius: 90.0,
                 color: background,
-                padding: EdgeInsets.all(3.0,),
+                padding: EdgeInsets.all(2.5,),
                 children: [
                   Icon(Icons.close,
                     size: 30.0,

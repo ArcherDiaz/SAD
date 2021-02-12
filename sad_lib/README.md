@@ -20,6 +20,3 @@ Custom Widgets:
 - ImageView widget need optional effect that makes the image zoom in and out slowly
 
 - Carousel widget needs to have the ability to fade in next image instead of sliding
-
-Dialogs:
-- dialogs need a header parameter of type widget
