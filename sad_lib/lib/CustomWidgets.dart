@@ -463,13 +463,6 @@ class ImageView extends StatefulWidget {
 
 class _ImageViewState extends State<ImageView> {
 
-  Uint8List _imageData;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -534,12 +527,6 @@ class _ImageViewState extends State<ImageView> {
           return widget.errorView;
         }
       },
-    )..image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool synchronousCall) {
-        info.image.toByteData().then((value){
-          _imageData = value.buffer.asUint8List();
-        });
-      },),
     );
   }
 
