@@ -465,23 +465,9 @@ class _ImageViewState extends State<ImageView> {
 
   Uint8List _imageData;
 
-  double _width;
-  double _height;
-
-  double _ratio;
-
   @override
   void initState() {
-    _ratio = widget.aspectRatio;
     super.initState();
-  }
-
-  @override
-  void didUpdateWidget(covariant ImageView oldWidget) {
-    if(oldWidget.aspectRatio == null && widget.aspectRatio != null) {
-      _ratio = widget.aspectRatio;
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -493,9 +479,9 @@ class _ImageViewState extends State<ImageView> {
         child: SizedBox(
           width: widget.width,
           height: widget.height == null
-              ? (widget.width == null || _ratio == null)
+              ? (widget.width == null || widget.aspectRatio == null)
                   ? null
-                  : widget.width / _ratio
+                  : widget.width / widget.aspectRatio
               : widget.height,
           child: Stack(
             alignment: Alignment.center,
@@ -524,9 +510,9 @@ class _ImageViewState extends State<ImageView> {
     return Image.network(widget.imageKey,
       width: widget.width,
       height: widget.height == null
-          ? (widget.width == null || _ratio == null)
-          ? null
-          : widget.width / _ratio
+          ? (widget.width == null || widget.aspectRatio == null)
+              ? null
+              : widget.width / widget.aspectRatio
           : widget.height,
       fit: widget.fit,
       loadingBuilder: (context, widget, chunk) {
@@ -548,6 +534,12 @@ class _ImageViewState extends State<ImageView> {
           return widget.errorView;
         }
       },
+    )..image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        info.image.toByteData().then((value){
+          _imageData = value.buffer.asUint8List();
+        });
+      },),
     );
   }
 
@@ -560,9 +552,9 @@ class _ImageViewState extends State<ImageView> {
             return RawImage(image: snapshot.data,
               width: widget.width,
               height: widget.height == null
-                  ? (widget.width == null || _ratio == null)
+                  ? (widget.width == null || widget.aspectRatio == null)
                   ? null
-                  : widget.width / _ratio
+                  : widget.width / widget.aspectRatio
                   : widget.height,
               fit: widget.fit,
             );
@@ -571,34 +563,13 @@ class _ImageViewState extends State<ImageView> {
                 : widget.errorView;
           }
         }else{
-          return Container(
-            alignment: Alignment.center,
-            width: widget.width,
-            height: (widget.width == null || _ratio == null) ? null : widget.width/_ratio,
-            child: widget.customLoader,
-          );
+          if(super.widget.customLoader == null) {
+            return Container();
+          }else{
+            return super.widget.customLoader;
+          }
         }
       },
-    );
-  }
-
-  void _loadNetworkImageData() {
-    Image.network("").image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool synchronousCall) {
-        info.image.toByteData().then((value){
-          _imageData = value.buffer.asUint8List();
-        });
-        _width = info.image.width.toDouble();
-        _height = info.image.height.toDouble();
-        if(_ratio == null){
-          ///to calculate the images actual ratio, you will need to get the width and height, then divide them: [width/height]
-          _ratio = _width/_height;
-        }
-//        print("\nImage Info: | ${widget.imageKey} |"
-//            "\n\t maxSize: ${widget.maxSize}"
-//            "\t|\tactualWidth: $_width"
-//            "\t|\tactualHeight: $_height");
-      },),
     );
   }
 
