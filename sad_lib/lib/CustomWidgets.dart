@@ -159,7 +159,9 @@ class ButtonView extends StatefulWidget {
 
   final Alignment alignment;
   final EdgeInsets margin;
-  final Width width;
+  final double width;
+  final double height;
+  final Width widthType;
   final Direction direction;
   final void Function() onPressed;
   final Color color;
@@ -178,7 +180,9 @@ class ButtonView extends StatefulWidget {
 
   ButtonView({Key key,
     this.alignment,
-    this.width = Width.fit,
+    this.width,
+    this.height,
+    this.widthType = Width.fit,
     this.direction = Direction.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
@@ -194,7 +198,9 @@ class ButtonView extends StatefulWidget {
 
   ButtonView.hover({Key key,
     this.alignment,
-    this.width = Width.fit,
+    this.width,
+    this.height,
+    this.widthType = Width.fit,
     this.direction = Direction.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
@@ -289,7 +295,12 @@ class _ButtonViewState extends State<ButtonView> {
   Widget _container(){
     if(widget.curve == null || widget.onHover == null){
       return Container(
-        width: widget.width == Width.fit ? null : double.infinity,
+        width: widget.width == null
+            ? widget.widthType == Width.fit
+                ? null
+                : double.infinity
+            : widget.width,
+        height: widget.height,
         padding: widget.padding,
         decoration: _decoration(),
         child: widget.builder == null
@@ -302,7 +313,12 @@ class _ButtonViewState extends State<ButtonView> {
       return AnimatedContainer(
         duration: widget.duration,
         curve: widget.curve,
-        width: widget.width == Width.fit ? null : double.infinity,
+        width: widget.width == null
+            ? widget.widthType == Width.fit
+                ? null
+                : double.infinity
+            : widget.width,
+        height: widget.height,
         padding: _changes.padding == null ? widget.padding : _changes.padding,
         decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
         child: widget.builder == null
@@ -328,14 +344,14 @@ class _ButtonViewState extends State<ButtonView> {
     if(widget.direction == Direction.horizontal) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (widget.width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: (widget.widthType == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: widget.children,
       );
     }else{
       return Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (widget.width == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: (widget.widthType == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: widget.children,
       );
