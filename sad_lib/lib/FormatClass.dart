@@ -144,7 +144,7 @@ class FormatClass{
   }
 
   String formatMoney(double num){
-    String full = "$num";
+    String full = num.toString();
     if(full.contains(".") == false){
       full = "$full.00";
     }
@@ -160,7 +160,6 @@ class FormatClass{
     String lower = full.substring(full.indexOf("."));
     lower = lower.padRight(3, "0");
     if(lower.length > 3){ lower = lower.substring(0, 3); }
-
     return "\$$upper$lower";
   }
 
