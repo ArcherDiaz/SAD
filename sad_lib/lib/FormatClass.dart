@@ -142,7 +142,7 @@ class FormatClass{
     phone = phone.replaceAll("-", "");
     return phone;
   }
-
+  
   String formatMoney(double num){
     String full = num.toString();
     if(full.contains(".") == false){
@@ -150,13 +150,16 @@ class FormatClass{
     }
     String b = full.substring(0, full.indexOf("."));
     String upper = "";
+  
     for(int i = (b.length-1); i >= 0; i--){
-      if((i%3) == 0 && (b.length - i) > 3){
+      int pos = b.length - (i+1);
+      if((pos%3) == 0 && (b.length - i) > 3){
         upper = b[i] + "," + upper;
       }else{
         upper = b[i] + upper;
       }
     }
+  
     String lower = full.substring(full.indexOf("."));
     lower = lower.padRight(3, "0");
     if(lower.length > 3){ lower = lower.substring(0, 3); }
