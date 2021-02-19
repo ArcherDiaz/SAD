@@ -150,7 +150,7 @@ class FormatClass{
     }
     String b = full.substring(0, full.indexOf("."));
     String upper = "";
-    for(int i = (b.length-1); i > 0; i--){
+    for(int i = (b.length-1); i >= 0; i--){
       if((i%3) == 0 && (b.length - i) > 3){
         upper = b[i] + "," + upper;
       }else{
