@@ -807,10 +807,10 @@ class ContainerChanges{
   final Decoration decoration;
 
   ContainerChanges({
-    this.alignment = Alignment.center,
+    this.alignment,
     this.margin,
     this.padding,
-    this.decoration = const BoxDecoration(),
+    this.decoration,
   });
 
   ContainerChanges.nullValue() :
