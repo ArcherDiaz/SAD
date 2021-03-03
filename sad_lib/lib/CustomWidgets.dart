@@ -552,7 +552,7 @@ class _ImageViewState extends State<ImageView> {
       builder: (context, snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           if(snapshot.hasData && snapshot.data != null){
-            return RawImage(image: snapshot.data,
+            return Image.memory(snapshot.data,
               width: widget.width,
               height: widget.height == null
                   ? (widget.width == null || widget.aspectRatio == null)
