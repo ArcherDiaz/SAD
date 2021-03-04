@@ -409,7 +409,7 @@ class CustomLoader extends StatelessWidget {
 
 //------------------------------------------------------------------------------
 
-enum ImageType {network, custom}
+enum ImageType {asset, network, custom}
 class ImageView extends StatefulWidget {
 
   final Color colorFilter;
@@ -423,7 +423,7 @@ class ImageView extends StatefulWidget {
   final String imageKey;
   final ImageType imageType;
 
-  final Future<Uint8List> imageFuture; final Future<Uint8List> Function() getCustomImage;
+  final Future<Uint8List> imageFuture;
 
   final Widget errorView;
   final Widget customLoader;
@@ -434,7 +434,7 @@ class ImageView extends StatefulWidget {
   ///this function will return the data of the image being displayed. Will return a null if the image is still loading
 
   ImageView.custom({Key key,
-    @required this.getCustomImage,
+    @required this.imageFuture,
     this.getImage,
 
     this.colorFilter = Colors.transparent,
@@ -451,7 +451,7 @@ class ImageView extends StatefulWidget {
     this.child,
     this.children,
   }) : this.imageType = ImageType.custom,
-        this.imageFuture = getCustomImage.call(), this.imageKey = null,
+        this.imageKey = null,
         super(key: key);
 
   ImageView.network({Key key,
@@ -471,7 +471,26 @@ class ImageView extends StatefulWidget {
 
     this.child,
     this.children,
-  }) : this.imageFuture = null, this.getCustomImage = null, this.imageType = ImageType.network, super(key: key);
+  }) : this.imageFuture = null, this.imageType = ImageType.network, super(key: key);
+
+  ImageView.asset({Key key,
+    @required this.imageKey,
+    this.getImage,
+
+    this.colorFilter = Colors.transparent,
+    this.margin = EdgeInsets.zero,
+    this.radius = 0.0,
+    this.aspectRatio,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+
+    this.customLoader,
+    this.errorView,
+
+    this.child,
+    this.children,
+  }) : this.imageFuture = null, this.imageType = ImageType.asset, super(key: key);
 
   @override
   _ImageViewState createState() => _ImageViewState();
@@ -495,9 +514,11 @@ class _ImageViewState extends State<ImageView> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              widget.imageType == ImageType.network
-                  ? _networkImage()
-                  : _customImage(),
+              widget.imageType == ImageType.asset
+                  ? _assetImage()
+                  : widget.imageType == ImageType.network
+                    ? _networkImage()
+                    : _customImage(),
               Container(
                 color: widget.colorFilter,
               ),
@@ -512,6 +533,26 @@ class _ImageViewState extends State<ImageView> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _assetImage(){
+    return Image.asset(widget.imageKey,
+      width: widget.width,
+      height: widget.height == null
+          ? (widget.width == null || widget.aspectRatio == null)
+              ? null
+              : widget.width / widget.aspectRatio
+          : widget.height,
+      fit: widget.fit,
+      errorBuilder: (context, object, stackTrace) {
+        if (widget.errorView == null) {
+          return TextView(text: "Unable to load image..", size: 15.0,);
+        } else {
+          print("stacktrace: ${stackTrace.toString()}");
+          return widget.errorView;
+        }
+      },
     );
   }
 
