@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: ^1.6.24
-  webview_flutter: ^01.0.7
-  firebase_auth: ^0.20.0+1
+  path_provider: ^1.6.27
+  webview_flutter: ^1.0.7
+  firebase_auth: ^0.20.1
 
 dev_dependencies:
   flutter_test:

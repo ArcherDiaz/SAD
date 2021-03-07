@@ -3,14 +3,14 @@ import 'dart:math';
 import 'dart:typed_data';
 
 enum  DataType{string, date}
-enum  DisplayDate{withWeekday, withMonth}
+enum  DisplayDate{weekday_dayOfMonth_year, month_dayOfMonth_year}
 
 class FormatClass{
 
   ///DATE FUNCTIONS
   DateTime now = DateTime.now();
 
-  String formattedDate(dynamic date, {DataType dataType = DataType.date, DisplayDate displayDate = DisplayDate.withMonth}) {
+  String formattedDate(dynamic date, {DataType dataType = DataType.date, DisplayDate displayDate = DisplayDate.month_dayOfMonth_year}) {
     DateTime postDate;
     if(dataType == DataType.date){
       postDate = date;
@@ -64,7 +64,7 @@ class FormatClass{
 
     year = postDate.year.toString();
 
-    if(displayDate == DisplayDate.withMonth) {
+    if(displayDate == DisplayDate.month_dayOfMonth_year) {
       return "$month ${postDate.day}, $year";
     }else{
       return "$weekday ${postDate.day}, $year";
@@ -178,7 +178,9 @@ class FormatClass{
     distance = distance * 60 * 1.1515;
     distance = distance * 1.609344;
     double price = dollarPerMile * distance.round();
-    if(price < minimumPrice){price = minimumPrice;}
+    if(price < minimumPrice){
+      price = minimumPrice;
+    }
     return (price + additionalFee);
   }
   double _deg2rad(double deg){
