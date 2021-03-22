@@ -13,6 +13,7 @@ class TextView extends StatelessWidget {
   final Color color;
   final FontWeight fontWeight;
   final FontStyle fontStyle;
+  final String fontFamily;
   final double letterSpacing;
   final double lineSpacing;
   final TextOverflow textOverflow;
@@ -28,6 +29,7 @@ class TextView extends StatelessWidget {
     this.color = Colors.black,
     this.fontWeight = FontWeight.w400,
     this.fontStyle = FontStyle.normal,
+    this.fontFamily,
     this.letterSpacing = 0.75,
     this.lineSpacing,
     this.textOverflow = TextOverflow.clip,
@@ -45,6 +47,7 @@ class TextView extends StatelessWidget {
         this.color = null,
         this.fontWeight = null,
         this.fontStyle = null,
+        this.fontFamily = null,
         this.letterSpacing = null,
         this.lineSpacing = null,
         this.textOverflow = null,
@@ -68,6 +71,7 @@ class TextView extends StatelessWidget {
         maxLines: maxLines,
         textAlign: align,
         style: TextStyle(
+          fontFamily: fontFamily,
           fontSize: size,
           letterSpacing: letterSpacing,
           height: lineSpacing,
@@ -88,6 +92,7 @@ class TextView extends StatelessWidget {
                   height: textView.lineSpacing,
                   fontWeight: textView.fontWeight,
                   fontStyle: textView.fontStyle,
+                  fontFamily: fontFamily,
                   color: textView.color,
                   shadows: shadows,
                 ),
@@ -113,6 +118,7 @@ class TextView extends StatelessWidget {
           fontSize: size,
           letterSpacing: letterSpacing,
           height: lineSpacing,
+          fontFamily: fontFamily,
           fontWeight: fontWeight,
           fontStyle: fontStyle,
           color: color,
@@ -128,6 +134,7 @@ class TextView extends StatelessWidget {
                 fontSize: textView.size,
                 letterSpacing: textView.letterSpacing,
                 height: lineSpacing,
+                fontFamily: fontFamily,
                 fontWeight: textView.fontWeight,
                 fontStyle: textView.fontStyle,
                 color: textView.color,
@@ -681,9 +688,19 @@ class _CustomCarouselState extends State<CustomCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: widget.aspectRatio,
-      child: Stack(
+    if(widget.aspectRatio == null){
+      return _stack();
+    }else{
+      return AspectRatio(
+        aspectRatio: widget.aspectRatio,
+        child: _stack(),
+      );
+    }
+  }
+
+  Widget _stack(){
+    if(widget.showPageIndicator == true){
+      return Stack(
         alignment: Alignment.bottomCenter,
         children: [
           PageView(
@@ -702,27 +719,43 @@ class _CustomCarouselState extends State<CustomCarousel> {
             },
           ),
 
-          if(widget.showPageIndicator == true)
-            Padding(
-              padding: EdgeInsets.all(10.0,),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for(int i = 0; i < widget.childrenLength; i++)
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
-                      child: Icon(Icons.brightness_1_sharp,
-                        size: 5.0,
-                        color: i == _index ? widget.indicatorColor : Colors.grey,
-                      ),
+          Padding(
+            padding: EdgeInsets.all(10.0,),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for(int i = 0; i < widget.childrenLength; i++)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5,),
+                    child: Icon(Icons.brightness_1_sharp,
+                      size: 5.0,
+                      color: i == _index ? widget.indicatorColor : Colors.grey,
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
+          ),
         ],
-      ),
-    );
+      );
+    }else{
+      return PageView(
+        controller: _pageController,
+        pageSnapping: true,
+        scrollDirection: Axis.horizontal,
+        children: widget.children == null ? [
+          for(int i = 0; i < widget.childrenLength; i++)
+            widget.childrenBuilder(context, i, i == _index, previous, next,),
+        ] : widget.children,
+        onPageChanged: (i){
+          setState(() {
+            _index = i;
+            _counter = 0.0;
+          });
+        },
+      );
+    }
   }
+
 
   void next(){
     _counter = 0;
