@@ -41,6 +41,7 @@ class TextView extends StatelessWidget {
     this.isSelectable = false,
     this.align = TextAlign.left,
     this.padding = EdgeInsets.zero,
+    this.lineSpacing,
     @required this.textSpan,
   }) : this.text = null,
         this.size = null,
@@ -49,7 +50,6 @@ class TextView extends StatelessWidget {
         this.fontStyle = null,
         this.fontFamily = null,
         this.letterSpacing = null,
-        this.lineSpacing = null,
         this.textOverflow = null,
         this.maxLines = null,
         this.shadows = null, super(key: key);
