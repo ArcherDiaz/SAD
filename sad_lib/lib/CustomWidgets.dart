@@ -99,6 +99,16 @@ class TextView extends StatelessWidget {
               ),
         ],),
         overflow: textOverflow,
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: size,
+          letterSpacing: letterSpacing,
+          height: lineSpacing,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
+          shadows: shadows,
+        ),
         maxLines: maxLines,
         textAlign: align,
       );
@@ -147,6 +157,16 @@ class TextView extends StatelessWidget {
         autofocus: false,
         maxLines: maxLines,
         textAlign: align,
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: size,
+          letterSpacing: letterSpacing,
+          height: lineSpacing,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          color: color,
+          shadows: shadows,
+        ),
         toolbarOptions: ToolbarOptions(cut: true, selectAll: true, paste: true, copy: true,),
       );
     }
@@ -173,6 +193,7 @@ class ButtonView extends StatefulWidget {
   final void Function() onPressed;
   final Color color;
   final Gradient gradient;
+  final Color splashColor;
   final double borderRadius;
   final Border border;
   final EdgeInsets padding;
@@ -195,6 +216,7 @@ class ButtonView extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
     this.color = Colors.transparent,
+    this.splashColor = Colors.transparent,
     this.gradient,
     this.boxShadow,
     this.border = const Border(),
@@ -213,6 +235,7 @@ class ButtonView extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
     this.color = Colors.transparent,
+    this.splashColor = Colors.transparent,
     this.gradient,
     this.boxShadow,
     this.border = const Border(),
@@ -229,6 +252,7 @@ class ButtonView extends StatefulWidget {
 
   @override
   _ButtonViewState createState() => _ButtonViewState();
+
 }
 
 class _ButtonViewState extends State<ButtonView> {
@@ -293,7 +317,7 @@ class _ButtonViewState extends State<ButtonView> {
       },
       borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
       hoverColor: Colors.transparent,
-      splashColor: Colors.transparent,
+      splashColor: widget.splashColor,
       child: _container(),
     );
   }
@@ -420,6 +444,8 @@ enum ImageType {asset, network, custom}
 class ImageView extends StatefulWidget {
 
   final Color colorFilter;
+  final Color imageColor;
+  final BlendMode imageColorBlendMode;
   final double radius;
   final double aspectRatio; ///if the [height] parameter is specified, then value is overridden
   final EdgeInsets margin;
@@ -445,6 +471,8 @@ class ImageView extends StatefulWidget {
     this.getImage,
 
     this.colorFilter = Colors.transparent,
+    this.imageColor,
+    this.imageColorBlendMode,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
@@ -466,6 +494,8 @@ class ImageView extends StatefulWidget {
     this.getImage,
 
     this.colorFilter = Colors.transparent,
+    this.imageColor,
+    this.imageColorBlendMode,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
@@ -485,6 +515,8 @@ class ImageView extends StatefulWidget {
     this.getImage,
 
     this.colorFilter = Colors.transparent,
+    this.imageColor,
+    this.imageColorBlendMode,
     this.margin = EdgeInsets.zero,
     this.radius = 0.0,
     this.aspectRatio,
@@ -552,6 +584,8 @@ class _ImageViewState extends State<ImageView> {
               : widget.width / widget.aspectRatio
           : widget.height,
       fit: widget.fit,
+      color: widget.imageColor,
+      colorBlendMode: widget.imageColorBlendMode,
       errorBuilder: (context, object, stackTrace) {
         if (widget.errorView == null) {
           return TextView(text: "Unable to load image..", size: 15.0,);
@@ -572,6 +606,8 @@ class _ImageViewState extends State<ImageView> {
               : widget.width / widget.aspectRatio
           : widget.height,
       fit: widget.fit,
+      color: widget.imageColor,
+      colorBlendMode: widget.imageColorBlendMode,
       loadingBuilder: (context, widget, chunk) {
         if(chunk == null) {
           return widget;
@@ -608,6 +644,8 @@ class _ImageViewState extends State<ImageView> {
                   : widget.width / widget.aspectRatio
                   : widget.height,
               fit: widget.fit,
+              color: widget.imageColor,
+              colorBlendMode: widget.imageColorBlendMode,
             );
           }else{
             return widget.errorView == null ? TextView(text: "Unable to load image..", size: 15.0,)
