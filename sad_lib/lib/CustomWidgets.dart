@@ -194,6 +194,7 @@ class ButtonView extends StatefulWidget {
   final Color color;
   final Gradient gradient;
   final Color splashColor;
+  final Color highlightColor;
   final double borderRadius;
   final Border border;
   final EdgeInsets padding;
@@ -217,6 +218,7 @@ class ButtonView extends StatefulWidget {
     @required this.onPressed,
     this.color = Colors.transparent,
     this.splashColor = Colors.transparent,
+    this.highlightColor = Colors.transparent,
     this.gradient,
     this.boxShadow,
     this.border = const Border(),
@@ -236,6 +238,7 @@ class ButtonView extends StatefulWidget {
     @required this.onPressed,
     this.color = Colors.transparent,
     this.splashColor = Colors.transparent,
+    this.highlightColor = Colors.transparent,
     this.gradient,
     this.boxShadow,
     this.border = const Border(),
@@ -317,6 +320,7 @@ class _ButtonViewState extends State<ButtonView> {
       },
       borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
       hoverColor: Colors.transparent,
+      highlightColor: widget.highlightColor,
       splashColor: widget.splashColor,
       child: _container(),
     );
