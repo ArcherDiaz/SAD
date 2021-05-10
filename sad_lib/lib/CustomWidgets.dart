@@ -181,7 +181,6 @@ class TextView extends StatelessWidget {
 enum Width {fit, stretch}
 ///fit = make button be normal size to fit content
 ///stretch = make button be stretch to fit screen width
-enum Direction {vertical, horizontal}
 class ButtonView extends StatefulWidget {
 
   final Alignment alignment;
@@ -189,7 +188,7 @@ class ButtonView extends StatefulWidget {
   final double width;
   final double height;
   final Width widthType;
-  final Direction direction;
+  final Axis direction;
   final void Function() onPressed;
   final Color color;
   final Gradient gradient;
@@ -212,7 +211,7 @@ class ButtonView extends StatefulWidget {
     this.width,
     this.height,
     this.widthType = Width.fit,
-    this.direction = Direction.horizontal,
+    this.direction = Axis.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
@@ -232,7 +231,7 @@ class ButtonView extends StatefulWidget {
     this.width,
     this.height,
     this.widthType = Width.fit,
-    this.direction = Direction.horizontal,
+    this.direction = Axis.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
@@ -376,7 +375,7 @@ class _ButtonViewState extends State<ButtonView> {
 
 
   Widget _contentView(){
-    if(widget.direction == Direction.horizontal) {
+    if(widget.direction == Axis.horizontal) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: (widget.widthType == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,

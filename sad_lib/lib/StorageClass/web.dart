@@ -117,7 +117,7 @@ class StorageClass {
 
   Future<bool> renameFile(String oldName, String newName){
     html.window.localStorage.update(newName, (value) => html.window.localStorage[oldName],
-        ifAbsent: ()=> html.window.localStorage[oldName],
+      ifAbsent: ()=> html.window.localStorage[oldName],
     );
     html.window.localStorage.remove(oldName);
 
