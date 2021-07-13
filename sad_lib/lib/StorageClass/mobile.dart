@@ -12,8 +12,7 @@ class StorageClass {
       File file = File("${xDirectory.path}/$filename");
       return file.exists().then((flag){
         if(flag) {
-
-          data = json.decode(file.readAsStringSync());
+          data = json.decode(file.readAsStringSync(),);
           return data;
         }else{
           return data;
@@ -24,9 +23,9 @@ class StorageClass {
 
   Future<void> writeToMap(String filename, Map<String, dynamic> data){
     return getApplicationDocumentsDirectory().then((xDirectory) {
-      return File("${xDirectory.path}/$filename").create(recursive: true).then((file){
-        String fileData = json.encode(data);
-        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value) {
+      return File("${xDirectory.path}/$filename").create(recursive: true,).then((file){
+        String fileData = json.encode(data,);
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write,).then((value) {
           return;
         });
       });
@@ -35,8 +34,8 @@ class StorageClass {
 
 
   Future<Map<String, dynamic>> writeToMapUpdate(String filename, String key, dynamic data, {bool replace = true}){
-    //Get map from json file then replace the data if it exists, otherwise create it
-    return readFromMap(filename).then((contents){
+    // Get map from json file then replace the data if it exists, otherwise create it
+    return readFromMap(filename,).then((contents){
       if(replace == true) {
         contents.update(key, (value) => data, ifAbsent: () => data);
       }else{
@@ -45,7 +44,7 @@ class StorageClass {
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
         String fileData = json.encode(contents);
-        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write,).then((value){
           return contents;
         });
       });
@@ -54,7 +53,7 @@ class StorageClass {
 
   Future<Map<String, dynamic>> writeToMapUpdateMulti(String filename, Map<String, dynamic> keyValueList, {bool replace = true}){
     //Get map from json file then replace the data if it exists, otherwise create it
-    return readFromMap(filename).then((contents){
+    return readFromMap(filename,).then((contents){
       if(replace == true) {
         keyValueList.forEach((key, value) {
           contents.update(key, (val) => value, ifAbsent: () => value);
@@ -65,9 +64,9 @@ class StorageClass {
         });
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
-        File file = File("${xDirectory.path}/$filename");
+        File file = File("${xDirectory.path}/$filename",);
         String fileData = json.encode(contents);
-        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write,).then((value){
           return contents;
         });
       });
@@ -75,14 +74,14 @@ class StorageClass {
   }
 
   Future<void> writeToMapRemove(String filename, String key){
-    return readFromMap(filename).then((contents){
+    return readFromMap(filename,).then((contents){
       if(contents.containsKey(key)) {
         contents.remove(key);
       }
       return getApplicationDocumentsDirectory().then((xDirectory) {
         File file = File("${xDirectory.path}/$filename");
         String fileData = json.encode(contents);
-        return file.writeAsString(fileData, flush: true, mode: FileMode.write).then((value){
+        return file.writeAsString(fileData, flush: true, mode: FileMode.write,).then((value){
           return;
         });
       });

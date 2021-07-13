@@ -178,7 +178,7 @@ class TextView extends StatelessWidget {
 
 //------------------------------------------------------------------------------
 
-enum Width {fit, stretch}
+enum WidthType {fit, stretch}
 ///fit = make button be normal size to fit content
 ///stretch = make button be stretch to fit screen width
 class ButtonView extends StatefulWidget {
@@ -187,9 +187,10 @@ class ButtonView extends StatefulWidget {
   final EdgeInsets margin;
   final double width;
   final double height;
-  final Width widthType;
+  final WidthType widthType;
   final Axis direction;
   final void Function() onPressed;
+  final void Function() onLongPressed;
   final Color color;
   final Gradient gradient;
   final Color splashColor;
@@ -210,11 +211,12 @@ class ButtonView extends StatefulWidget {
     this.alignment,
     this.width,
     this.height,
-    this.widthType = Width.fit,
+    this.widthType = WidthType.fit,
     this.direction = Axis.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
+    this.onLongPressed,
     this.color = Colors.transparent,
     this.splashColor = Colors.transparent,
     this.highlightColor = Colors.transparent,
@@ -230,11 +232,12 @@ class ButtonView extends StatefulWidget {
     this.alignment,
     this.width,
     this.height,
-    this.widthType = Width.fit,
+    this.widthType = WidthType.fit,
     this.direction = Axis.horizontal,
     this.margin = EdgeInsets.zero,
     this.padding = EdgeInsets.zero,
     @required this.onPressed,
+    this.onLongPressed,
     this.color = Colors.transparent,
     this.splashColor = Colors.transparent,
     this.highlightColor = Colors.transparent,
@@ -299,9 +302,8 @@ class _ButtonViewState extends State<ButtonView> {
 
   Widget _inkWell(){
     return InkWell(
-      onTap: (){
-        widget.onPressed.call();
-      },
+      onTap: widget.onPressed.call,
+      onLongPress: widget.onLongPressed,
       onHover: (flag){
         if(flag == true){ ///if mouse is currently over widget
           setState(() {
@@ -330,7 +332,7 @@ class _ButtonViewState extends State<ButtonView> {
     if(widget.curve == null || widget.onHover == null){
       return Container(
         width: widget.width == null
-            ? widget.widthType == Width.fit
+            ? widget.widthType == WidthType.fit
                 ? null
                 : double.infinity
             : widget.width,
@@ -339,8 +341,8 @@ class _ButtonViewState extends State<ButtonView> {
         decoration: _decoration(),
         child: widget.builder == null
             ? widget.children == null
-            ? widget.child
-            : _contentView()
+              ? widget.child
+              : _contentView()
             : widget.builder(_isHovering),
       );
     }else{
@@ -348,7 +350,7 @@ class _ButtonViewState extends State<ButtonView> {
         duration: widget.duration,
         curve: widget.curve,
         width: widget.width == null
-            ? widget.widthType == Width.fit
+            ? widget.widthType == WidthType.fit
                 ? null
                 : double.infinity
             : widget.width,
@@ -357,8 +359,8 @@ class _ButtonViewState extends State<ButtonView> {
         decoration: _changes.decoration == null ? _decoration() : _changes.decoration,
         child: widget.builder == null
             ? widget.children == null
-            ? widget.child
-            : _contentView()
+              ? widget.child
+              : _contentView()
             : widget.builder(_isHovering),
       );
     }
@@ -366,7 +368,9 @@ class _ButtonViewState extends State<ButtonView> {
   BoxDecoration _decoration(){
     return BoxDecoration(
       color: widget.color,
-      borderRadius: (widget.borderRadius == null || widget.borderRadius == 0.0) ? null : BorderRadius.circular(widget.borderRadius),
+      borderRadius: (widget.borderRadius == null || widget.borderRadius == 0.0 || !widget.border.isUniform)
+          ? null
+          : BorderRadius.circular(widget.borderRadius,),
       gradient: widget.gradient,
       border: widget.border,
       boxShadow: widget.boxShadow == null ? [] : widget.boxShadow,
@@ -378,15 +382,15 @@ class _ButtonViewState extends State<ButtonView> {
     if(widget.direction == Axis.horizontal) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (widget.widthType == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: (widget.widthType == WidthType.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: widget.children,
       );
     }else{
       return Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: (widget.widthType == Width.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: (widget.widthType == WidthType.stretch) ? MainAxisAlignment.center : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: widget.children,
       );
     }
@@ -444,6 +448,7 @@ class CustomLoader extends StatelessWidget {
 //------------------------------------------------------------------------------
 
 enum ImageType {asset, network, custom}
+
 class ImageView extends StatefulWidget {
 
   final Color colorFilter;
@@ -591,7 +596,10 @@ class _ImageViewState extends State<ImageView> {
       colorBlendMode: widget.imageColorBlendMode,
       errorBuilder: (context, object, stackTrace) {
         if (widget.errorView == null) {
-          return TextView(text: "Unable to load image..", size: 15.0,);
+          return TextView(text: "Unable to load image..",
+            align: TextAlign.center,
+            size: 15.0,
+          );
         } else {
           print("stacktrace: ${stackTrace.toString()}");
           return widget.errorView;
@@ -624,7 +632,10 @@ class _ImageViewState extends State<ImageView> {
       },
       errorBuilder: (context, object, stackTrace) {
         if (widget.errorView == null) {
-          return TextView(text: "Unable to load image..", size: 15.0,);
+          return TextView(text: "Unable to load image..",
+            align: TextAlign.center,
+            size: 15.0,
+          );
         } else {
           print("stacktrace: ${stackTrace.toString()}");
           return widget.errorView;
@@ -643,16 +654,22 @@ class _ImageViewState extends State<ImageView> {
               width: widget.width,
               height: widget.height == null
                   ? (widget.width == null || widget.aspectRatio == null)
-                  ? null
-                  : widget.width / widget.aspectRatio
+                    ? null
+                    : widget.width / widget.aspectRatio
                   : widget.height,
               fit: widget.fit,
               color: widget.imageColor,
               colorBlendMode: widget.imageColorBlendMode,
             );
           }else{
-            return widget.errorView == null ? TextView(text: "Unable to load image..", size: 15.0,)
-                : widget.errorView;
+            if(widget.errorView == null){
+              return TextView(text: "Unable to load image..",
+                align: TextAlign.center,
+                size: 15.0,
+              );
+            }else{
+              return widget.errorView;
+            }
           }
         }else{
           if(super.widget.customLoader == null) {
@@ -908,7 +925,9 @@ class _HoverWidgetState extends State<HoverWidget> {
           });
         },
         cursor: MouseCursor.defer,
-        child: widget.child == null ? widget.builder(_isHovering,) : widget.child,
+        child: widget.child == null
+            ? widget.builder(_isHovering,)
+            : widget.child,
       ),
     );
   }
