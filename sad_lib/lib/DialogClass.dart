@@ -723,6 +723,8 @@ class CustomDialog extends StatelessWidget {
     this.insetAnimationCurve = Curves.decelerate,
     this.clipBehavior = Clip.none,
     this.shape,
+    this.padding = EdgeInsets.zero,
+    this.margin,
     this.child,
   }) : assert(clipBehavior != null),
         super(key: key);
@@ -739,6 +741,10 @@ class CustomDialog extends StatelessWidget {
 
   final ShapeBorder shape;
 
+  final EdgeInsets padding;
+
+  final EdgeInsets margin;
+
   final Widget child;
 
   static const RoundedRectangleBorder _defaultDialogShape =
@@ -749,33 +755,38 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final DialogTheme dialogTheme = DialogTheme.of(context);
-    final EdgeInsets insetPadding = EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
-    final EdgeInsets effectivePadding = MediaQuery.of(context).viewInsets + (insetPadding ?? const EdgeInsets.all(0.0));
-    return AnimatedPadding(
-      padding: effectivePadding,
-      duration: insetAnimationDuration,
-      curve: insetAnimationCurve,
-      child: MediaQuery.removeViewInsets(
-        removeLeft: true,
-        removeTop: true,
-        removeRight: true,
-        removeBottom: true,
-        context: context,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-                maxWidth: (size.width > 700) ? size.width/3 : size.width,
-                minWidth: size.width/4,
-                maxHeight: (size.width > 700) ? size.height/1.2 : size.height,
-                minHeight: size.width/15,
-            ),
-            child: Material(
-              color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
-              elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
-              shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
-              type: MaterialType.card,
-              clipBehavior: clipBehavior,
-              child: child,
+    final EdgeInsets insetPadding = margin ?? EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0,);
+    final EdgeInsets effectivePadding = MediaQuery.of(context).viewInsets + insetPadding;
+    return SafeArea(
+      child: AnimatedPadding(
+        padding: effectivePadding,
+        duration: insetAnimationDuration,
+        curve: insetAnimationCurve,
+        child: MediaQuery.removeViewInsets(
+          removeLeft: true,
+          removeTop: true,
+          removeRight: true,
+          removeBottom: true,
+          context: context,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: (size.width > 700) ? size.width/3 : size.width,
+                  minWidth: size.width/4,
+                  maxHeight: (size.width > 700) ? size.height/1.2 : size.height,
+                  minHeight: size.width/15,
+              ),
+              child: Material(
+                color: backgroundColor ?? dialogTheme.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
+                elevation: elevation ?? dialogTheme.elevation ?? _defaultElevation,
+                shape: shape ?? dialogTheme.shape ?? _defaultDialogShape,
+                type: MaterialType.card,
+                clipBehavior: clipBehavior,
+                child: Padding(
+                  padding: padding,
+                  child: child,
+                ),
+              ),
             ),
           ),
         ),
