@@ -196,6 +196,7 @@ class ButtonView extends StatefulWidget {
   final Color splashColor;
   final Color highlightColor;
   final double borderRadius;
+  final BoxShape shape;
   final Border border;
   final EdgeInsets padding;
   final List<BoxShadow> boxShadow;
@@ -224,6 +225,7 @@ class ButtonView extends StatefulWidget {
     this.boxShadow,
     this.border = const Border(),
     this.borderRadius = 7.5,
+    this.shape = BoxShape.rectangle,
     this.child,
     this.children,
   }) : duration = null, curve = null, onHover = null, builder = null, super(key: key);
@@ -245,6 +247,7 @@ class ButtonView extends StatefulWidget {
     this.boxShadow,
     this.border = const Border(),
     this.borderRadius = 7.5,
+    this.shape = BoxShape.rectangle,
 
     this.child,
     this.children,
@@ -373,6 +376,7 @@ class _ButtonViewState extends State<ButtonView> {
           : BorderRadius.circular(widget.borderRadius,),
       gradient: widget.gradient,
       border: widget.border,
+      shape: widget.shape,
       boxShadow: widget.boxShadow == null ? [] : widget.boxShadow,
     );
   }
