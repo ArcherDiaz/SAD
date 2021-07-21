@@ -371,7 +371,7 @@ class _ButtonViewState extends State<ButtonView> {
   BoxDecoration _decoration(){
     return BoxDecoration(
       color: widget.color,
-      borderRadius: (widget.borderRadius == null || widget.borderRadius == 0.0 || !widget.border.isUniform)
+      borderRadius: (widget.shape != BoxShape.rectangle || widget.borderRadius == null || widget.borderRadius == 0.0 || !widget.border.isUniform)
           ? null
           : BorderRadius.circular(widget.borderRadius,),
       gradient: widget.gradient,
