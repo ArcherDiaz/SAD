@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:html' as html;
 
+import 'package:sad_lib/StorageClass/StorageClass.dart';
+
 class StorageClass {
   StorageClass();
 
@@ -124,12 +126,8 @@ class StorageClass {
     return Future.value(html.window.localStorage.containsKey(newName));
   }
 
-  Future<List<Map<String, dynamic>>> loadList({String path = "lists", bool recursive = false}){
-    List<Map<String, dynamic>> data = List();
-    if(html.window.localStorage.containsKey(path)) {
-      data = json.decode(html.window.localStorage[path]);
-    }
-    return Future.value(data);
+  Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
+    return Future.value([]);
   }
 
 

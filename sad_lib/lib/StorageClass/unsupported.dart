@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:sad_lib/StorageClass/StorageClass.dart';
+
 class StorageClass {
   StorageClass();
 
@@ -47,7 +49,7 @@ class StorageClass {
     throw "Storage Error: Platform Not Supported!";
   }
 
-  Future<List<Map<String, dynamic>>> loadList({String path = "lists", bool recursive = false}){
+  Future<List<FileEntity>> loadList({String path = "lists", bool recursive = false}){
     throw "Storage Error: Platform Not Supported!";
   }
 

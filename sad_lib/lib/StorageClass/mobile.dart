@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
+import 'package:sad_lib/StorageClass/StorageClass.dart';
 
 class StorageClass {
   StorageClass();
@@ -203,18 +204,5 @@ class StorageClass {
       return File("${xDirectory.path}/$filename").readAsBytes();
     });
   }
-
-}
-
-
-class FileEntity{
-
-  String name;
-  String parent;
-  String fullPath;
-  String extension;
-
-  FileEntity({this.name, this.parent, this.fullPath, this.extension});
-
 
 }
