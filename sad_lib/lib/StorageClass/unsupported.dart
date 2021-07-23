@@ -49,7 +49,7 @@ class StorageClass {
     throw "Storage Error: Platform Not Supported!";
   }
 
-  Future<List<FileEntity>> loadList({String path = "lists", bool recursive = false}){
+  Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
     throw "Storage Error: Platform Not Supported!";
   }
 
