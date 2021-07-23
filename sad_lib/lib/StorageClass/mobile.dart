@@ -170,15 +170,17 @@ class StorageClass {
     });
   }
 
-  Future<List<Map<String, dynamic>>> loadList({String path = "lists", bool recursive = false}){
-    List<Map<String, dynamic>> data = List();
+  Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
+    List<FileEntity> data = [];
     return getApplicationDocumentsDirectory().then((dir){
       return Directory("${dir.path}/$path").list(recursive: recursive).forEach((file) {
-        if(file.path.endsWith(".diaz")) {
-          data.add({
-            "name": file.path.substring(file.path.lastIndexOf("/")+1, file.path.lastIndexOf(".")),
-            "parent": file.parent.path.substring(file.parent.path.lastIndexOf("/")+1),
-          });
+        if(file.path.endsWith(extension)) {
+          data.add(FileEntity(
+            name: file.path.substring(file.path.lastIndexOf("/")+1, file.path.lastIndexOf(".")),
+            parent: file.parent.path.substring(file.parent.path.lastIndexOf("/")+1),
+            fullPath: file.absolute.path,
+            extension: extension,
+          ));
         }
       }).then((value){
         return data;
@@ -189,7 +191,7 @@ class StorageClass {
 
   Future<void> saveImage(String filename, Uint8List bytes){
     return getApplicationDocumentsDirectory().then((xDirectory) {
-      return File("${xDirectory.path}/images/$filename").create(recursive: true).then((file) {
+      return File("${xDirectory.path}/$filename").create(recursive: true).then((file) {
         return file.writeAsBytes(bytes.toList(), flush: true, mode: FileMode.write).then((value){
           return null;
         });
@@ -198,8 +200,21 @@ class StorageClass {
   }
   Future<Uint8List> readImage(String filename){
     return getApplicationDocumentsDirectory().then((xDirectory) {
-      return File("${xDirectory.path}/images/$filename").readAsBytes();
+      return File("${xDirectory.path}/$filename").readAsBytes();
     });
   }
+
+}
+
+
+class FileEntity{
+
+  String name;
+  String parent;
+  String fullPath;
+  String extension;
+
+  FileEntity({this.name, this.parent, this.fullPath, this.extension});
+
 
 }
