@@ -10,8 +10,9 @@ class FileEntity{
   String parent;
   String fullPath;
   String extension;
+  DateTime creationDate;
 
-  FileEntity({this.name, this.parent, this.fullPath, this.extension});
+  FileEntity({this.name, this.parent, this.fullPath, this.extension, this.creationDate,});
 
 
 }

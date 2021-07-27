@@ -181,6 +181,7 @@ class StorageClass {
             parent: file.parent.path.substring(file.parent.path.lastIndexOf("/")+1),
             fullPath: file.absolute.path,
             extension: extension,
+            creationDate: file.statSync().modified,
           ));
         }
       }).then((value){
