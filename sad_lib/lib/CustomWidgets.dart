@@ -304,35 +304,29 @@ class _ButtonViewState extends State<ButtonView> {
   }
 
   Widget _inkWell(){
-    return Material(
-      color: widget.color,
-      borderRadius: (widget.shape != BoxShape.rectangle || widget.borderRadius == null || widget.borderRadius == 0.0 || !widget.border.isUniform)
-          ? null
-          : BorderRadius.circular(widget.borderRadius,),
-      child: InkWell(
-        onTap: widget.onPressed.call,
-        onLongPress: widget.onLongPressed,
-        onHover: (flag){
-          if(flag == true){ ///if mouse is currently over widget
-            setState(() {
-              if(widget.onHover != null) {
-                _changes = widget.onHover;
-              }
-              _isHovering = true;
-            });
-          }else{ ///if mouse is NOT over widget
-            setState(() {
-              _changes = ContainerChanges.nullValue();
-              _isHovering = false;
-            });
-          }
-        },
-        borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
-        hoverColor: Colors.transparent,
-        highlightColor: widget.highlightColor,
-        splashColor: widget.splashColor,
-        child: _container(),
-      ),
+    return InkWell(
+      onTap: widget.onPressed.call,
+      onLongPress: widget.onLongPressed,
+      onHover: (flag){
+        if(flag == true){ ///if mouse is currently over widget
+          setState(() {
+            if(widget.onHover != null) {
+              _changes = widget.onHover;
+            }
+            _isHovering = true;
+          });
+        }else{ ///if mouse is NOT over widget
+          setState(() {
+            _changes = ContainerChanges.nullValue();
+            _isHovering = false;
+          });
+        }
+      },
+      borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+      hoverColor: Colors.transparent,
+      highlightColor: widget.highlightColor,
+      splashColor: widget.splashColor,
+      child: _container(),
     );
   }
 
@@ -376,6 +370,10 @@ class _ButtonViewState extends State<ButtonView> {
   }
   BoxDecoration _decoration(){
     return BoxDecoration(
+      color: widget.color,
+      borderRadius: (widget.shape != BoxShape.rectangle || widget.borderRadius == null || widget.borderRadius == 0.0 || !widget.border.isUniform)
+          ? null
+          : BorderRadius.circular(widget.borderRadius,),
       gradient: widget.gradient,
       border: widget.border,
       shape: widget.shape,
