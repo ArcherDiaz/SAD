@@ -322,7 +322,10 @@ class _ButtonViewState extends State<ButtonView> {
           });
         }
       },
-      borderRadius: BorderRadius.circular(widget.borderRadius == null ? 0.0 : widget.borderRadius,),
+      borderRadius: BorderRadius.circular(widget.shape == BoxShape.circle
+          ? 360.0
+          : widget.borderRadius == null ? 0.0 : widget.borderRadius,
+      ),
       hoverColor: Colors.transparent,
       highlightColor: widget.highlightColor,
       splashColor: widget.splashColor,
