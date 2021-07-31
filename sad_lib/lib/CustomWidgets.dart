@@ -305,7 +305,7 @@ class _ButtonViewState extends State<ButtonView> {
 
   Widget _inkWell(){
     return InkWell(
-      onTap: widget.onPressed.call,
+      onTap: widget.onPressed,
       onLongPress: widget.onLongPressed,
       onHover: (flag){
         if(flag == true){ ///if mouse is currently over widget
