@@ -8,15 +8,15 @@ class StorageClass {
   StorageClass();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
-    Map<String, dynamic> data = Map();
+    Map<String, dynamic> _data = Map();
     return getApplicationDocumentsDirectory().then((xDirectory){
-      File file = File("${xDirectory.path}/$filename");
-      return file.exists().then((flag){
+      File _file = File("${xDirectory.path}/$filename");
+      return _file.exists().then((flag){
         if(flag) {
-          data = json.decode(file.readAsStringSync(),);
-          return data;
+          _data = json.decode(_file.readAsStringSync(),);
+          return _data;
         }else{
-          return data;
+          return _data;
         }
       });
     });
@@ -25,8 +25,8 @@ class StorageClass {
   Future<void> writeToMap(String filename, Map<String, dynamic> data){
     return getApplicationDocumentsDirectory().then((xDirectory) {
       return File("${xDirectory.path}/$filename").create(recursive: true,).then((file){
-        String fileData = json.encode(data,);
-        return file.writeAsString(fileData, flush: true, mode: FileMode.write,).then((value) {
+        String _fileData = json.encode(data,);
+        return file.writeAsString(_fileData, flush: true, mode: FileMode.write,).then((useless) {
           return;
         });
       });
@@ -172,11 +172,11 @@ class StorageClass {
   }
 
   Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
-    List<FileEntity> data = [];
-    return getApplicationDocumentsDirectory().then((dir){
-      return Directory("${dir.path}/$path").list(recursive: recursive).forEach((file) {
+    List<FileEntity> _data = [];
+    return getApplicationDocumentsDirectory().then((xDirectory){
+      return Directory("${xDirectory.path}/$path").list(recursive: recursive,).forEach((file) {
         if(file.path.endsWith(extension)) {
-          data.add(FileEntity(
+          _data.add(FileEntity(
             name: file.path.substring(file.path.lastIndexOf("/")+1, file.path.lastIndexOf(".")),
             parent: file.parent.path.substring(file.parent.path.lastIndexOf("/")+1),
             fullPath: file.absolute.path,
@@ -184,8 +184,8 @@ class StorageClass {
             creationDate: file.statSync().modified,
           ));
         }
-      }).then((value){
-        return data;
+      }).then((useless){
+        return _data;
       });
     });
   }

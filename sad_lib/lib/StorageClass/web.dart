@@ -8,51 +8,53 @@ class StorageClass {
   StorageClass();
 
   Future<Map<String, dynamic>> readFromMap(String filename){
-    Map<String, dynamic> data = Map();
-    if(html.window.localStorage.containsKey(filename)) {
-      data = json.decode(html.window.localStorage[filename]);
-    }
-    return Future.value(data);
+    Map<String, dynamic> _data = Map();
+    return existenceCheck(filename,).then((flag){
+      if(flag == true){
+        _data = json.decode(html.window.localStorage[filename]);
+      }
+      return _data;
+    });
   }
 
   Future<void> writeToMap(String filename, Map<String, dynamic> data){
     String fileData = json.encode(data);
-    html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
+    html.window.localStorage.update(filename, (old) => fileData, ifAbsent: ()=> fileData);
     return Future.value(null);
   }
 
 
   Future<Map<String, dynamic>> writeToMapUpdate(String filename, String key, dynamic data, {bool replace = true}){
     //Get map from json file then replace the data if it exists, otherwise create it
-    return readFromMap(filename).then((contents){
+    return readFromMap(filename,).then((contents){
       if(replace == true) {
-        contents.update(key, (value) => data, ifAbsent: () => data);
+        contents.update(key, (old) => data, ifAbsent: () => data);
       }else{
-        contents.update(key, (value) => value+data, ifAbsent: () => data);
+        contents.update(key, (old) => old+data, ifAbsent: () => data);
       }
 
       String fileData = json.encode(contents);
       html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
-      return Future.value(contents);
+      return contents;
     });
   }
 
   Future<Map<String, dynamic>> writeToMapUpdateMulti(String filename, Map<String, dynamic> keyValueList, {bool replace = true}){
     //Get map from json file then replace the data if it exists, otherwise create it
-    return readFromMap(filename).then((contents){
+    return readFromMap(filename,).then((contents){
       if(replace == true) {
         keyValueList.forEach((key, value) {
-          contents.update(key, (val) => value, ifAbsent: () => value);
+          contents.update(key, (old) => value, ifAbsent: () => value);
         });
       }else{
         keyValueList.forEach((key, value) {
-          contents.update(key, (val) => val+value, ifAbsent: () => value);
+          contents.update(key, (old) => old+value, ifAbsent: () => value);
         });
       }
 
       String fileData = json.encode(contents);
       html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
-      return Future.value(contents);
+      return contents;
     });
   }
 
@@ -64,7 +66,7 @@ class StorageClass {
 
       String fileData = json.encode(contents);
       html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
-      return Future.value(null);
+      return null;
     });
   }
 
@@ -83,7 +85,7 @@ class StorageClass {
 
       String fileData = json.encode(contents);
       html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
-      return Future.value(true);
+      return true;
     });
   }
 
@@ -98,14 +100,14 @@ class StorageClass {
 
       String fileData = json.encode(contents);
       html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
-      return Future.value(null);
+      return null;
     });
   }
 
 
 
   Future<bool> existenceCheck(String filename){
-    return Future.value(html.window.localStorage.containsKey(filename));
+    return Future.value(html.window.localStorage.containsKey(filename,),);
   }
 
   Future<bool> deleteFile(String filename, {bool isDirectory = false}) {
@@ -118,30 +120,50 @@ class StorageClass {
   }
 
   Future<bool> renameFile(String oldName, String newName){
-    html.window.localStorage.update(newName, (value) => html.window.localStorage[oldName],
-      ifAbsent: ()=> html.window.localStorage[oldName],
-    );
-    html.window.localStorage.remove(oldName);
+    return existenceCheck(oldName,).then((flag){
+      if(flag == true){
+        html.window.localStorage.update(newName, (old) => html.window.localStorage[oldName],
+          ifAbsent: ()=> html.window.localStorage[oldName],
+        );
+        html.window.localStorage.remove(oldName,);
+      }
 
-    return Future.value(html.window.localStorage.containsKey(newName));
+      return html.window.localStorage.containsKey(newName);
+    });
   }
 
   Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
-    return Future.value([]);
+    List<FileEntity> _data = [];
+    List<String> _storageKeys = html.window.localStorage.keys.toList();
+    _storageKeys.where((path) => path.startsWith(path,)).toList().forEach((file) {
+      int _index = path.lastIndexOf("/",);
+      if(file.lastIndexOf("/",) == _index && file.endsWith(extension)) {
+        _data.add(FileEntity(
+          name: file.substring(file.lastIndexOf("/",)+1, file.lastIndexOf(".",),),
+          parent: file.substring(0, _index,),
+          fullPath: file,
+          extension: extension,
+          creationDate: null,
+        ));
+      }
+    });
+    return Future.value(_data);
   }
 
 
   Future<void> saveImage(String filename, Uint8List bytes){
     String fileData = json.encode(bytes.toList(),);
-    html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
+    html.window.localStorage.update(filename, (old) => fileData, ifAbsent: ()=> fileData,);
     return Future.value(null);
   }
   Future<Uint8List> readImage(String filename){
     Uint8List data;
-    if(html.window.localStorage.containsKey(filename)) {
-      data = Uint8List.fromList(json.decode(html.window.localStorage[filename],),);
-    }
-    return Future.value(data);
+    return existenceCheck(filename,).then((flag){
+      if(flag == true) {
+        data = Uint8List.fromList(json.decode(html.window.localStorage[filename],),);
+      }
+      return data;
+    });
   }
 
 }
