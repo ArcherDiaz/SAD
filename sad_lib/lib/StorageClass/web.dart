@@ -132,14 +132,14 @@ class StorageClass {
 
 
   Future<void> saveImage(String filename, Uint8List bytes){
-    String fileData = json.encode(bytes);
+    String fileData = json.encode(bytes.toList(),);
     html.window.localStorage.update(filename, (value) => fileData, ifAbsent: ()=> fileData);
     return Future.value(null);
   }
   Future<Uint8List> readImage(String filename){
     Uint8List data;
     if(html.window.localStorage.containsKey(filename)) {
-      data = json.decode(html.window.localStorage[filename]);
+      data = Uint8List.fromList(json.decode(html.window.localStorage[filename],),);
     }
     return Future.value(data);
   }
