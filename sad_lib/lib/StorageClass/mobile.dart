@@ -146,7 +146,12 @@ class StorageClass {
   Future<bool> deleteFile(String filename, {bool isDirectory = false}) {
     return getApplicationDocumentsDirectory().then((xDirectory){
       if(isDirectory == false){
-        File file = File("${xDirectory.path}/$filename");
+        File file;
+        if(filename.contains(xDirectory.path,)){
+          file = File(filename);
+        }else{
+          file = File("${xDirectory.path}/$filename");
+        }
         return file.exists().then((flag){
           if(flag){
             return file.delete(recursive: false).then((value) => value.exists());
@@ -155,7 +160,12 @@ class StorageClass {
           }
         });
       }else{
-        Directory dir = Directory("${xDirectory.path}/$filename");
+        Directory dir;
+        if(filename.contains(xDirectory.path,)){
+          dir = Directory(filename);
+        }else{
+          dir = Directory("${xDirectory.path}/$filename");
+        }
         return dir.exists().then((flag){
           if(flag){
             return dir.delete(recursive: false).then((value) => value.exists());
