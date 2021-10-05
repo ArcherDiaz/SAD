@@ -136,7 +136,7 @@ class StorageClass {
     List<FileEntity> _data = [];
     List<String> _storageKeys = html.window.localStorage.keys.toList();
     _storageKeys.where((path) => path.startsWith(path,)).toList().forEach((file) {
-      int _index = path.lastIndexOf("/",);
+      int _index = path.length-1;
       if(file.lastIndexOf("/",) == _index && file.endsWith(extension)) {
         _data.add(FileEntity(
           name: file.substring(file.lastIndexOf("/",)+1, file.lastIndexOf(".",),),

@@ -10,7 +10,12 @@ class StorageClass {
   Future<Map<String, dynamic>> readFromMap(String filename){
     Map<String, dynamic> _data = Map();
     return getApplicationDocumentsDirectory().then((xDirectory){
-      File _file = File("${xDirectory.path}/$filename");
+      File _file;
+      if(filename.contains(xDirectory.path,)){
+        _file = File(filename);
+      }else{
+        _file = File("${xDirectory.path}/$filename");
+      }
       return _file.exists().then((flag){
         if(flag) {
           _data = json.decode(_file.readAsStringSync(),);
