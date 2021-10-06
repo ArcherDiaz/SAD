@@ -135,7 +135,7 @@ class StorageClass {
   Future<List<FileEntity>> loadList(String path, {bool recursive = false, String extension = ".diaz"}){
     List<FileEntity> _data = [];
     List<String> _storageKeys = html.window.localStorage.keys.toList();
-    _storageKeys.where((path) => path.startsWith(path,)).toList().forEach((file) {
+    _storageKeys.where((key) => key.startsWith(path,)).toList().forEach((file) {
       int _index = path.length-1;
       if((file.lastIndexOf("/",)-1) == _index && file.endsWith(extension)) {
         _data.add(FileEntity(
