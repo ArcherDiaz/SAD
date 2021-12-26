@@ -154,7 +154,7 @@ class StorageClass {
         }
         return file.exists().then((flag){
           if(flag){
-            return file.delete(recursive: false).then((value) => value.exists());
+            return file.delete(recursive: true,).then((value) => value.exists());
           }else {
             return true;
           }
@@ -168,7 +168,7 @@ class StorageClass {
         }
         return dir.exists().then((flag){
           if(flag){
-            return dir.delete(recursive: false).then((value) => value.exists());
+            return dir.delete(recursive: true,).then((value) => value.exists());
           }else {
             return true;
           }

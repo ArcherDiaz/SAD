@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:sad_lib/CustomWidgets.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class DialogClass {
   ///This class handle dialogs that are used throughout the app
@@ -533,85 +532,6 @@ class DialogClass {
                   color: buttonColor,
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-
-  ///web view Dialog
-  Future<void> showWebViewDialog(BuildContext context, String url, String linkName, {JavascriptChannel javaScriptChannel}) {
-    return showDialog(context: context, barrierDismissible: true, builder: (BuildContext context) {
-      JavascriptChannel exitChannel = JavascriptChannel(
-          name: "Listener",
-          onMessageReceived: (JavascriptMessage message) {
-            if(message.message == "paid"){
-              Navigator.of(context).pop();
-            }
-          });
-        return Material(
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                decoration: BoxDecoration(
-                  color: background,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      offset: Offset(5.0, 5.0),
-                      blurRadius: 5.0,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10.0),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50.0),
-                          color: background,
-                        ),
-                        child: TextView(text: linkName,
-                          padding: EdgeInsets.symmetric(horizontal: 10.0,),
-                          color: textColor,
-                          size: 17.5,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: (){
-                        Navigator.of(context).pop();
-                      },
-                      splashColor: buttonColor,
-                      icon: Icon(Icons.close,
-                        size: 30.0,
-                        color: buttonColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: WebView(
-                  initialUrl: url,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-                  gestureNavigationEnabled: false,
-                  javascriptChannels: javaScriptChannel == null ? <JavascriptChannel>[].toSet() : <JavascriptChannel>[
-                    exitChannel,
-                    javaScriptChannel,
-                  ].toSet(),
-                  navigationDelegate: (NavigationRequest request) {
-                    return NavigationDecision.prevent;
-                  },
-                ),
-              )
             ],
           ),
         );
